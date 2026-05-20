@@ -3,8 +3,8 @@ import { shopUpgrades } from './shop.js';
 import { sound } from './sound.js';
 
 // Supabase Database Settings (Free Tier Leaderboard Backend)
-const SUPABASE_URL = 'https://oexyvrmgiywivunxlyhh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9leHl2cm1naXl3aXZ1bnhseWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNTU4NzIsImV4cCI6MjA2MzYzMTg3Mn0.H9d1H-kFmX8667-KzE5BfKj9n7Jt24gqD0YxW_H5Uis';
+const SUPABASE_URL = 'https://iijsmwlmotdsxbzmitga.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_V381dGtC_ABLRRZzPO71Ug_wO5x_SqQ';
 
 // ==========================================================================
 // GAME STATE DEFINITION
