@@ -199,6 +199,9 @@
                     <button id="achievements-btn" class="action-btn menu-btn">
                         <i class="fas fa-award"></i> <span>Başarımlar</span>
                     </button>
+                    <button id="talents-btn" class="action-btn menu-btn">
+                        <i class="fas fa-tree"></i> <span>Yetenek Ağacı</span>
+                    </button>
                 </div>
             </div>
 
@@ -358,6 +361,32 @@
                     <i class="fas fa-arrow-left"></i> Geri Dön
                 </button>
             </div>
+
+            <!-- Talents Sub-Panel -->
+            <div class="menu-container glass-panel animated-modal hidden" id="menu-talents-panel">
+                <div class="menu-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2>🌳 Yetenek Ağacı & Gelişim</h2>
+                    <div class="talent-points-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem;">
+                        ✨ Yetenek Puanı: <span id="talent-points-count">0</span>
+                    </div>
+                </div>
+                <div class="menu-scroll-body form-body">
+                    <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">
+                        Başarımları açarak veya hayatta kaldığınız her 10 hafta için yetenek puanı kazanırsınız. Yetenekler kariyeriniz boyunca (tüm oyunlarda) kalıcıdır!
+                    </p>
+                    <div class="talents-grid" id="talents-list">
+                        <!-- Dynamic talents will be inserted here -->
+                    </div>
+                </div>
+                <div class="talents-footer-btns" style="display: flex; gap: 8px; width: 100%; margin-top: 10px;">
+                    <button id="talents-reset-btn" class="action-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--color-danger); flex: 1;">
+                        <i class="fas fa-undo"></i> Sıfırla
+                    </button>
+                    <button id="talents-back-btn" class="action-btn menu-btn" style="flex: 2; margin: 0;">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Monthly Report / Shop Modal -->
@@ -430,6 +459,20 @@
                     <div class="gameover-stat-box">
                         <span class="label">En İyi Süre</span>
                         <span id="gameover-best" class="value">0 Hafta</span>
+                    </div>
+                </div>
+
+                <!-- Game Over Progression Chart -->
+                <div class="gameover-chart-section">
+                    <h3>📈 Hafta Hafta Mağaza Durumu</h3>
+                    <div id="gameover-chart-container" class="gameover-chart-container" style="margin: 15px auto; max-width: 500px; height: 180px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; position: relative;">
+                        <!-- Dynamic SVG will be rendered here -->
+                    </div>
+                    <div class="chart-legend" style="display: flex; justify-content: center; gap: 16px; margin-top: 8px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">
+                        <span style="color: var(--color-staff);"><i class="fas fa-circle"></i> Personel</span>
+                        <span style="color: var(--color-customer);"><i class="fas fa-circle"></i> Müşteri</span>
+                        <span style="color: var(--color-hq);"><i class="fas fa-circle"></i> Genel Merkez</span>
+                        <span style="color: var(--color-finance);"><i class="fas fa-circle"></i> Finans</span>
                     </div>
                 </div>
 

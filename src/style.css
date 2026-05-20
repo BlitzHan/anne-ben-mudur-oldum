@@ -2348,3 +2348,153 @@ body {
     20%, 60% { transform: translateX(-6px); }
     40%, 80% { transform: translateX(6px); }
 }
+
+/* ==========================================================================
+   TALENTS SYSTEM
+   ========================================================================== */
+.talents-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 4px;
+}
+
+@media (max-width: 480px) {
+    .talents-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.talent-card-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    cursor: not-allowed;
+}
+
+/* Available state (can afford and pre-reqs met) */
+.talent-card-box.available {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.talent-card-box.available:hover {
+    border-color: #c084fc;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Purchased state */
+.talent-card-box.unlocked {
+    cursor: default;
+    border-color: rgba(168, 85, 247, 0.4);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.1);
+}
+
+.talent-card-box.locked {
+    opacity: 0.55;
+    filter: grayscale(0.8);
+}
+
+.talent-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.talent-card-box.unlocked .talent-icon-wrapper {
+    background: rgba(168, 85, 247, 0.15);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+}
+
+.talent-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    flex-grow: 1;
+}
+
+.talent-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.talent-card-box.unlocked .talent-title {
+    color: #e9d5ff;
+}
+
+.talent-desc {
+    font-size: 0.74rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.talent-cost-tag {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #c084fc;
+    background: rgba(168, 85, 247, 0.1);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.talent-card-box.unlocked .talent-cost-tag {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.talent-card-box.locked .talent-cost-tag {
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Connectors / Req info styling */
+.talent-req-info {
+    font-size: 0.65rem;
+    color: var(--color-danger);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* Post-Game Progression SVG Styling */
+.svg-chart-path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawPath 2s ease-out forwards;
+}
+
+@keyframes drawPath {
+    to { stroke-dashoffset: 0; }
+}
+
+.svg-grid-line {
+    stroke: rgba(255, 255, 255, 0.06);
+    stroke-width: 1;
+}
+
+.svg-grid-text {
+    fill: var(--text-muted);
+    font-size: 8px;
+    font-family: inherit;
+}

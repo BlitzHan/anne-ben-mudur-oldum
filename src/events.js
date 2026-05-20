@@ -410,5 +410,156 @@ export const events = [
                 effect: { staff: 0, customer: 0, hq: 0, finance: 0 }
             }
         ]
+    },
+    // Hırsızlık Salgını Zinciri
+    {
+        id: "theft_epidemic_1",
+        title: "Gizemli Kayıplar (Kısım 1)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🕶️",
+        desc: "Fırat panikle yanınıza geliyor: 'Müdürüm, reyonlardaki pahalı kulaklıklar ve telefonlar gizemli şekilde kutularından çıkıyor. Bir hırsızlık çetesi dadanmış olabilir!'",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Güvenlik tedbirlerini artırıp ekibi uyaralım.",
+                effect: { staff: -5, customer: 0, hq: 5, finance: -5 },
+                nextChainCardId: "theft_epidemic_2a"
+            },
+            {
+                text: "Direkt polise ihbarda bulunun, sivil pusu kuralım.",
+                effect: { staff: -10, customer: -5, hq: 10, finance: 0 },
+                nextChainCardId: "theft_epidemic_2b"
+            }
+        ]
+    },
+    {
+        id: "theft_epidemic_2a",
+        title: "Kameralar Devrede (Kısım 2)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "📹",
+        desc: "Ekip reyonlarda sürekli nöbet tutuyor ama hırsızlar çok profesyonel. Müşteriler takip edildiklerini hissedip rahatsız olmaya başladı.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
+        options: [
+            {
+                text: "Müşterilerin çantalarını mağaza çıkışında zorunlu aratın.",
+                effect: { staff: -5, customer: -20, hq: 5, finance: 5 },
+                nextChainCardId: "theft_epidemic_3_bad"
+            },
+            {
+                text: "Bütçe ayırıp sivil dedektif kiralayalım.",
+                effect: { staff: 5, customer: 0, hq: 5, finance: -15 },
+                nextChainCardId: "theft_epidemic_3_good"
+            }
+        ]
+    },
+    {
+        id: "theft_epidemic_2b",
+        title: "Polis Pususu (Kısım 2)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🚓",
+        desc: "Sivil polisler mağazada bekliyor. Müşteriler ortamdaki gerginliği hissedip hızlıca çıkıyor, satışlar durma noktasında.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Polisleri geri çekelim, normal düzene dönelim.",
+                effect: { staff: 10, customer: 15, hq: -10, finance: -5 }
+            },
+            {
+                text: "Biraz daha sabredelim, pusuyu bozmayın.",
+                effect: { staff: -10, customer: -15, hq: 10, finance: -5 },
+                nextChainCardId: "theft_epidemic_3_catch"
+            }
+        ]
+    },
+    {
+        id: "theft_epidemic_3_good",
+        title: "Çete Çökertildi! (Son)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "⚖️",
+        desc: "Harika haber! Kiraladığınız özel sivil dedektif, hırsızlık çetesini suçüstü yakaladı. Kayıp mallar kurtarıldı, Bölge Müdürü tebrik etti!",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Tüm ekibe prim dağıtalım! (Müşteri ve Personel +15)",
+                effect: { staff: 15, customer: 15, hq: 10, finance: -10 }
+            }
+        ]
+    },
+    {
+        id: "theft_epidemic_3_bad",
+        title: "Boykot ve Şikayet! (Son)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "📢",
+        desc: "Çanta arama uygulaması büyük tepki topladı! Müşteriler mağazayı boykot ediyor. Sosyal medyada itibarımız yerle bir oldu.",
+        character: { name: "Gizem", title: "Teknoloji Influencer'ı", emoji: "🤳" },
+        options: [
+            {
+                text: "Resmi olarak özür dileyip çantaları aramayı bırakın.",
+                effect: { staff: 10, customer: -25, hq: -20, finance: -10 }
+            }
+        ]
+    },
+    {
+        id: "theft_epidemic_3_catch",
+        title: "Suçüstü Yakalama! (Son)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "👮",
+        desc: "Polisler çeteyi mağazadan çıkarken kıskıvrak yakaladı! Mağazanın güvenlik algısı tavan yaptı.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Polislere teşekkür et ve mağaza güvenliğini kutla.",
+                effect: { staff: 10, customer: 10, hq: 15, finance: 5 }
+            }
+        ]
+    },
+    // Sosyal Medya Linci Zinciri
+    {
+        id: "social_crisis_1",
+        title: "Viral Şikayet Videosu (Kısım 1)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🤳",
+        desc: "Gizem heyecanla aradı: 'Müdürüm! Bir müşteri, satış temsilcinizin ona kaba davrandığına dair video paylaşmış. Video şu an 500 bin izlendi ve linç ediliyoruz!'",
+        character: { name: "Gizem", title: "Teknoloji Influencer'ı", emoji: "🤳" },
+        options: [
+            {
+                text: "Hemen resmi özür yayınlayıp temsilciyi işten uzaklaştıralım.",
+                effect: { staff: -20, customer: 10, hq: 5, finance: -5 },
+                nextChainCardId: "social_crisis_2a"
+            },
+            {
+                text: "Acele etmeyin, mağaza kamera kayıtlarını inceleyelim.",
+                effect: { staff: 10, customer: -10, hq: -5, finance: 0 },
+                nextChainCardId: "social_crisis_2b"
+            }
+        ]
+    },
+    {
+        id: "social_crisis_2a",
+        title: "Personel Grevi! (Son)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🪧",
+        desc: "Çalışanı haksız yere uzaklaştırdığınız için mağazadaki tüm ekip kasaları kapattı ve iş bıraktı! Mağaza kilitlendi.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
+        options: [
+            {
+                text: "Çalışanı geri çağırıp tüm ekipten özür dileyin.",
+                effect: { staff: 25, customer: -15, hq: -15, finance: -10 }
+            }
+        ]
+    },
+    {
+        id: "social_crisis_2b",
+        title: "Gerçek Ortaya Çıktı! (Son)",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🏆",
+        desc: "Kamera kayıtlarında müşterinin personele hakaretler ettiği ve bardağı fırlattığı görüldü! Videoyu yayınladınız, tüm kamuoyu sizi savundu, itibarınız arttı.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Haklılığımızı kutla ve ekibe teşekkür et.",
+                effect: { staff: 15, customer: 20, hq: 15, finance: 5 }
+            }
+        ]
     }
 ];

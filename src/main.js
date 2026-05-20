@@ -1,6 +1,7 @@
 import { events } from './events.js';
 import { shopUpgrades } from './shop.js';
 import { sound } from './sound.js';
+import { TALENTS } from './talents.js';
 
 // Supabase Database Settings (Free Tier Leaderboard Backend)
 const SUPABASE_URL = 'https://iijsmwlmotdsxbzmitga.supabase.co';
@@ -33,7 +34,11 @@ let state = {
     activeCampaign: null,
     campaignWeeksLeft: 0,
     blackFridayWarning: false,
-    unlockedAchievements: []
+    unlockedAchievements: [],
+    talentPoints: 0,
+    unlockedTalents: [],
+    history: [],
+    nextChainCardId: null
 };
 
 // Achievements Database
@@ -208,6 +213,26 @@ function setupStartMenu() {
         document.getElementById('menu-achievements-panel').classList.add('hidden');
         menuMain.classList.remove('hidden');
     });
+
+    // Talents button
+    document.getElementById('talents-btn').addEventListener('click', () => {
+        sound.playClick();
+        menuMain.classList.add('hidden');
+        document.getElementById('menu-talents-panel').classList.remove('hidden');
+        renderTalents();
+    });
+
+    // Talents Back button
+    document.getElementById('talents-back-btn').addEventListener('click', () => {
+        sound.playClick();
+        document.getElementById('menu-talents-panel').classList.add('hidden');
+        menuMain.classList.remove('hidden');
+    });
+
+    // Talents Reset button
+    document.getElementById('talents-reset-btn').addEventListener('click', () => {
+        resetTalents();
+    });
 }
 
 function renderMenuLeaderboard() {
@@ -241,6 +266,12 @@ function triggerAchievementUnlock(id) {
     localStorage.setItem('aura_unlocked_achievements', JSON.stringify(unlocked));
     state.unlockedAchievements = unlocked;
 
+    // Award 1 Talent Point for achievement unlock
+    let points = parseInt(localStorage.getItem('aura_talent_points') || '0', 10);
+    points += 1;
+    localStorage.setItem('aura_talent_points', points);
+    state.talentPoints = points;
+
     const ach = ACHIEVEMENTS.find(a => a.id === id);
     if (!ach) return;
 
@@ -256,7 +287,7 @@ function triggerAchievementUnlock(id) {
     toast.innerHTML = `
         <div class="toast-icon">${ach.emoji}</div>
         <div class="toast-body">
-            <span class="toast-heading">Başarım Açıldı!</span>
+            <span class="toast-heading">Başarım Açıldı! (+1 Yetenek Puanı)</span>
             <span class="toast-name">${ach.title}</span>
         </div>
     `;
@@ -293,6 +324,101 @@ function renderAchievements() {
         `;
         listElement.appendChild(card);
     });
+}
+
+// ==========================================================================
+// TALENTS MANAGEMENT
+// ==========================================================================
+function renderTalents() {
+    const listElement = document.getElementById('talents-list');
+    const pointsCountElement = document.getElementById('talent-points-count');
+    if (!listElement || !pointsCountElement) return;
+
+    // Refresh state variables from localStorage
+    state.talentPoints = parseInt(localStorage.getItem('aura_talent_points') || '0', 10);
+    state.unlockedTalents = JSON.parse(localStorage.getItem('aura_unlocked_talents') || '[]');
+
+    pointsCountElement.textContent = state.talentPoints;
+    listElement.innerHTML = '';
+
+    TALENTS.forEach(talent => {
+        const isUnlocked = state.unlockedTalents.includes(talent.id);
+        const hasPrereq = talent.req ? state.unlockedTalents.includes(talent.req) : true;
+        const canAfford = state.talentPoints >= talent.cost;
+        
+        let stateClass = 'locked';
+        if (isUnlocked) {
+            stateClass = 'unlocked';
+        } else if (hasPrereq && canAfford) {
+            stateClass = 'available';
+        } else if (hasPrereq && !canAfford) {
+            stateClass = 'locked';
+        } else {
+            stateClass = 'locked';
+        }
+
+        const card = document.createElement('div');
+        card.className = `talent-card-box ${stateClass}`;
+        
+        let prereqHtml = '';
+        if (talent.req && !state.unlockedTalents.includes(talent.req)) {
+            const reqTalent = TALENTS.find(t => t.id === talent.req);
+            prereqHtml = `<span class="talent-req-info"><i class="fas fa-lock"></i> Gereksinim: ${reqTalent.name}</span>`;
+        }
+
+        card.innerHTML = `
+            <div class="talent-icon-wrapper">
+                ${talent.emoji}
+            </div>
+            <div class="talent-info">
+                <span class="talent-title">${talent.name}</span>
+                <span class="talent-desc">${talent.desc}</span>
+                ${prereqHtml}
+            </div>
+            <div class="talent-cost-tag">
+                ${isUnlocked ? 'AÇIK' : `${talent.cost} Puan`}
+            </div>
+        `;
+
+        if (stateClass === 'available') {
+            card.addEventListener('click', () => {
+                buyTalent(talent);
+            });
+        }
+
+        listElement.appendChild(card);
+    });
+}
+
+function buyTalent(talent) {
+    if (state.talentPoints < talent.cost) return;
+
+    sound.playCashRegister();
+    state.talentPoints -= talent.cost;
+    state.unlockedTalents.push(talent.id);
+
+    localStorage.setItem('aura_talent_points', state.talentPoints);
+    localStorage.setItem('aura_unlocked_talents', JSON.stringify(state.unlockedTalents));
+
+    renderTalents();
+}
+
+function resetTalents() {
+    sound.playClick();
+    
+    let spentPoints = 0;
+    state.unlockedTalents.forEach(tId => {
+        const found = TALENTS.find(t => t.id === tId);
+        if (found) spentPoints += found.cost;
+    });
+
+    state.talentPoints += spentPoints;
+    state.unlockedTalents = [];
+
+    localStorage.setItem('aura_talent_points', state.talentPoints);
+    localStorage.setItem('aura_unlocked_talents', JSON.stringify(state.unlockedTalents));
+
+    renderTalents();
 }
 
 // Setup High Score from Local Storage
@@ -401,6 +527,26 @@ function startNewGame() {
     state.blackFridayWarning = false;
     state.unlockedAchievements = JSON.parse(localStorage.getItem('aura_unlocked_achievements') || '[]');
     
+    // Load talents & points from local storage
+    state.talentPoints = parseInt(localStorage.getItem('aura_talent_points') || '0', 10);
+    state.unlockedTalents = JSON.parse(localStorage.getItem('aura_unlocked_talents') || '[]');
+    state.nextChainCardId = null;
+    state.history = [];
+
+    // Apply Quick Start Talent modifier
+    if (state.unlockedTalents.includes('quick_start')) {
+        state.stats.finance = Math.min(100, state.stats.finance + 5);
+    }
+
+    // Capture initial history state
+    state.history.push({
+        week: 0,
+        staff: state.stats.staff,
+        customer: state.stats.customer,
+        hq: state.stats.hq,
+        finance: state.stats.finance
+    });
+    
     // Update header info dynamically
     document.getElementById('header-subtitle').innerHTML = `
         Müdür: <strong>${state.playerName}</strong> 
@@ -466,15 +612,22 @@ function drawNextCard() {
     }
 
     if (!event) {
+        if (state.nextChainCardId) {
+            event = events.find(e => e.id === state.nextChainCardId);
+            state.nextChainCardId = null;
+        }
+    }
+
+    if (!event) {
         if (state.deck.length === 0) {
-            state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_')));
+            state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.id.includes('_2') && !e.id.includes('_3')));
         }
         event = state.deck.pop();
         
         // Upgrade condition checks
         if (event.id === "ac_broke" && state.purchasedUpgrades.has("heavy_duty_ac")) {
             if (state.deck.length === 0) {
-                state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_')));
+                state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.id.includes('_2') && !e.id.includes('_3')));
             }
             event = state.deck.pop(); // draw another
         }
@@ -639,6 +792,13 @@ function handleChoice(optionIdx) {
     
     const option = state.currentEvent.options[optionIdx];
     const effects = option.effect;
+
+    // Set next chain card ID if present
+    if (option.nextChainCardId) {
+        state.nextChainCardId = option.nextChainCardId;
+    } else {
+        state.nextChainCardId = null;
+    }
     
     sound.playSwipe();
 
@@ -731,6 +891,19 @@ function getModifiedEffect(stat, val, eventId) {
             if (stat === "staff") {
                 modifier = Math.round(modifier * 0.7);
             }
+        }
+    }
+    
+    // 4. Talent Tree Modifiers
+    if (state.unlockedTalents) {
+        if (stat === 'staff' && modifier < 0 && state.unlockedTalents.includes('leadership')) {
+            modifier = Math.round(modifier * 0.9);
+        }
+        if (stat === 'customer' && modifier > 0 && state.unlockedTalents.includes('crm')) {
+            modifier = Math.round(modifier * 1.15);
+        }
+        if (modifier < 0 && state.unlockedTalents.includes('crisis_resilience') && state.stats[stat] < 15) {
+            modifier = Math.round(modifier * 0.5);
         }
     }
     
@@ -828,6 +1001,17 @@ function progressTime() {
 
     state.date.week += 1;
 
+    // Capture weekly state in history
+    if (state.history) {
+        state.history.push({
+            week: getSurvivalScore(),
+            staff: state.stats.staff,
+            customer: state.stats.customer,
+            hq: state.stats.hq,
+            finance: state.stats.finance
+        });
+    }
+
     // Survive checks for achievements
     const weeksSurvived = getSurvivalScore();
     if (weeksSurvived >= 4) {
@@ -861,6 +1045,20 @@ function assignNewGoal() {
     // Pick random target from pool
     const randomGoal = GOALS_POOL[Math.floor(Math.random() * GOALS_POOL.length)];
     state.activeGoal = { ...randomGoal };
+    
+    // Apply Aura Vizyonu Talent Modifier (-5% to the required minVal)
+    if (state.unlockedTalents && state.unlockedTalents.includes('aura_vision')) {
+        state.activeGoal.minVal = Math.max(20, state.activeGoal.minVal - 5);
+        if (state.activeGoal.type === 'customer') {
+            state.activeGoal.desc = `Müşteri deneyimini %${state.activeGoal.minVal}'in üzerinde tut.`;
+        } else if (state.activeGoal.type === 'staff') {
+            state.activeGoal.desc = `Personel moralini en az %${state.activeGoal.minVal} seviyesinde tut.`;
+        } else if (state.activeGoal.type === 'finance') {
+            state.activeGoal.desc = `Kasa bütçesini %${state.activeGoal.minVal} veya daha yukarısında bitir.`;
+        } else if (state.activeGoal.type === 'hq') {
+            state.activeGoal.desc = `Bölge mutluluğunu %${state.activeGoal.minVal} üzerinde tut.`;
+        }
+    }
     
     // Display target banner
     const banner = document.getElementById('target-alert-banner');
@@ -934,14 +1132,23 @@ function triggerMonthlyReview() {
 }
 
 // Setup shop upgrade cards dynamically
+function getUpgradeCost(upgrade) {
+    let cost = upgrade.cost;
+    if (state.unlockedTalents && state.unlockedTalents.includes('negotiation')) {
+        cost = Math.round(cost * 0.8);
+    }
+    return cost;
+}
+
 function setupShopUI() {
     document.getElementById('shop-budget-val').textContent = `${state.stats.finance}%`;
     const shopList = document.getElementById('shop-items-list');
     shopList.innerHTML = '';
 
     shopUpgrades.forEach(upgrade => {
+        const cost = getUpgradeCost(upgrade);
         const isPurchased = state.purchasedUpgrades.has(upgrade.id);
-        const canAfford = state.stats.finance >= upgrade.cost;
+        const canAfford = state.stats.finance >= cost;
         
         const itemCard = document.createElement('div');
         itemCard.className = `shop-item glass-panel ${isPurchased ? 'purchased' : ''}`;
@@ -952,7 +1159,7 @@ function setupShopUI() {
             <div class="shop-item-desc">${upgrade.desc}</div>
             <div class="shop-item-effect"><i class="fas fa-plus-circle"></i> ${upgrade.effectDesc}</div>
             <button class="shop-buy-btn" data-id="${upgrade.id}" ${isPurchased || !canAfford ? 'disabled' : ''}>
-                ${isPurchased ? '<i class="fas fa-check"></i> Alındı' : `<i class="fas fa-coins"></i> Satın Al (${upgrade.cost}%)`}
+                ${isPurchased ? '<i class="fas fa-check"></i> Alındı' : `<i class="fas fa-coins"></i> Satın Al (${cost}%)`}
             </button>
         `;
 
@@ -970,12 +1177,13 @@ function setupShopUI() {
 
 // Handle upgrade purchase
 function buyUpgrade(upgrade) {
-    if (state.stats.finance < upgrade.cost) return;
+    const cost = getUpgradeCost(upgrade);
+    if (state.stats.finance < cost) return;
 
     sound.playCashRegister();
 
     // Subtract finance cost
-    state.stats.finance -= upgrade.cost;
+    state.stats.finance -= cost;
     state.purchasedUpgrades.add(upgrade.id);
 
     // Apply immediate bonus if exists (we can also check and handle it)
@@ -1063,6 +1271,16 @@ function triggerGameOver(failedStat) {
 
     // Firing Message
     document.getElementById('gameover-reason').textContent = GAMEOVER_REASONS[failedStat];
+
+    // Calculate and award Talent Points (1 point for every 10 weeks survived)
+    const earnedPoints = Math.floor(weeksSurvived / 10);
+    if (earnedPoints > 0) {
+        let currentPoints = parseInt(localStorage.getItem('aura_talent_points') || '0', 10);
+        currentPoints += earnedPoints;
+        localStorage.setItem('aura_talent_points', currentPoints);
+        state.talentPoints = currentPoints;
+        document.getElementById('gameover-reason').innerHTML += `<br><span style="color:#c084fc; font-weight:bold; font-size:0.9rem; display:inline-block; margin-top:8px;">✨ Bu oyunda hayatta kalarak +${earnedPoints} Yetenek Puanı kazandınız!</span>`;
+    }
     
     // Current tenure details
     document.getElementById('gameover-tenure').textContent = `${weeksSurvived} Hafta`;
@@ -1078,6 +1296,9 @@ function triggerGameOver(failedStat) {
 
     saveLeaderboard(weeksSurvived);
     renderLeaderboard();
+
+    // Render SVG progression chart
+    renderProgressionChart();
 
     // Show Game Over Overlay
     document.getElementById('gameover-screen').classList.remove('hidden');
@@ -1219,4 +1440,69 @@ function renderScoreList(listElement, scores) {
         `;
         listElement.appendChild(item);
     });
+}
+
+function renderProgressionChart() {
+    const container = document.getElementById('gameover-chart-container');
+    if (!container) return;
+
+    const data = state.history;
+    if (!data || data.length === 0) {
+        container.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-muted);">Grafik veri yetersiz.</div>';
+        return;
+    }
+
+    const width = container.clientWidth || 500;
+    const height = 180;
+    const padding = 20;
+
+    const maxWeeks = data.length - 1;
+
+    const getX = (week) => padding + (week / Math.max(1, maxWeeks)) * (width - 2 * padding);
+    const getY = (val) => height - padding - (val / 100) * (height - 2 * padding);
+
+    let staffPoints = [];
+    let customerPoints = [];
+    let hqPoints = [];
+    let financePoints = [];
+
+    data.forEach(d => {
+        staffPoints.push(`${getX(d.week)},${getY(d.staff)}`);
+        customerPoints.push(`${getX(d.week)},${getY(d.customer)}`);
+        hqPoints.push(`${getX(d.week)},${getY(d.hq)}`);
+        financePoints.push(`${getX(d.week)},${getY(d.finance)}`);
+    });
+
+    const staffPath = staffPoints.join(' ');
+    const customerPath = customerPoints.join(' ');
+    const hqPath = hqPoints.join(' ');
+    const financePath = financePoints.join(' ');
+
+    let svgHtml = `
+        <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="overflow: visible;">
+            <!-- Grid lines -->
+            <line x1="${padding}" y1="${getY(0)}" x2="${width - padding}" y2="${getY(0)}" class="svg-grid-line" />
+            <line x1="${padding}" y1="${getY(25)}" x2="${width - padding}" y2="${getY(25)}" class="svg-grid-line" />
+            <line x1="${padding}" y1="${getY(50)}" x2="${width - padding}" y2="${getY(50)}" class="svg-grid-line" />
+            <line x1="${padding}" y1="${getY(75)}" x2="${width - padding}" y2="${getY(75)}" class="svg-grid-line" />
+            <line x1="${padding}" y1="${getY(100)}" x2="${width - padding}" y2="${getY(100)}" class="svg-grid-line" />
+
+            <!-- Y Axis labels -->
+            <text x="${padding - 5}" y="${getY(0) + 3}" text-anchor="end" class="svg-grid-text">0</text>
+            <text x="${padding - 5}" y="${getY(50) + 3}" text-anchor="end" class="svg-grid-text">50</text>
+            <text x="${padding - 5}" y="${getY(100) + 3}" text-anchor="end" class="svg-grid-text">100</text>
+
+            <!-- X Axis labels (Weeks) -->
+            <text x="${padding}" y="${height - 4}" text-anchor="start" class="svg-grid-text">Hafta 0</text>
+            <text x="${width - padding}" y="${height - 4}" text-anchor="end" class="svg-grid-text">Hafta ${maxWeeks}</text>
+
+            <!-- Line paths -->
+            <polyline fill="none" stroke="var(--color-staff)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${staffPath}" class="svg-chart-path" style="filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.4));" />
+            <polyline fill="none" stroke="var(--color-customer)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${customerPath}" class="svg-chart-path" style="filter: drop-shadow(0 0 3px rgba(234, 179, 8, 0.4));" />
+            <polyline fill="none" stroke="var(--color-hq)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${hqPath}" class="svg-chart-path" style="filter: drop-shadow(0 0 3px rgba(6, 182, 212, 0.4));" />
+            <polyline fill="none" stroke="var(--color-finance)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${financePath}" class="svg-chart-path" style="filter: drop-shadow(0 0 3px rgba(34, 197, 94, 0.4));" />
+        </svg>
+    `;
+
+    container.innerHTML = svgHtml;
 }
