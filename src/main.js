@@ -38,7 +38,8 @@ let state = {
     talentPoints: 0,
     unlockedTalents: [],
     history: [],
-    nextChainCardId: null
+    nextChainCardId: null,
+    shopOffers: []
 };
 
 // Achievements Database
@@ -532,6 +533,7 @@ function startNewGame() {
     state.unlockedTalents = JSON.parse(localStorage.getItem('aura_unlocked_talents') || '[]');
     state.nextChainCardId = null;
     state.history = [];
+    state.shopOffers = [];
 
     // Apply Quick Start Talent modifier
     if (state.unlockedTalents.includes('quick_start')) {
@@ -1125,10 +1127,39 @@ function triggerMonthlyReview() {
     }
 
     // Initialize shop options
+    rollShopOffers();
     setupShopUI();
 
     // Show Report Modal
     document.getElementById('monthly-modal').classList.remove('hidden');
+}
+
+function rollShopOffers() {
+    const unpurchased = shopUpgrades.filter(upgrade => !state.purchasedUpgrades.has(upgrade.id));
+    const shuffled = shuffle([...unpurchased]);
+    state.shopOffers = shuffled.slice(0, 4);
+}
+
+function updateModalStatsUI() {
+    const stats = ['staff', 'customer', 'hq', 'finance'];
+    stats.forEach(stat => {
+        const bar = document.getElementById(`modal-stat-${stat}-bar`);
+        const valText = document.getElementById(`modal-stat-${stat}-val`);
+        const value = state.stats[stat];
+        if (bar) {
+            bar.style.width = `${value}%`;
+            if (value < 20) {
+                bar.style.background = 'var(--color-danger)';
+            } else if (value < 40) {
+                bar.style.background = 'var(--color-warning)';
+            } else {
+                bar.style.background = '';
+            }
+        }
+        if (valText) {
+            valText.textContent = `${value}%`;
+        }
+    });
 }
 
 // Setup shop upgrade cards dynamically
@@ -1141,11 +1172,13 @@ function getUpgradeCost(upgrade) {
 }
 
 function setupShopUI() {
+    updateModalStatsUI();
     document.getElementById('shop-budget-val').textContent = `${state.stats.finance}%`;
     const shopList = document.getElementById('shop-items-list');
     shopList.innerHTML = '';
 
-    shopUpgrades.forEach(upgrade => {
+    // Render the current month's rolled shop offers
+    state.shopOffers.forEach(upgrade => {
         const cost = getUpgradeCost(upgrade);
         const isPurchased = state.purchasedUpgrades.has(upgrade.id);
         const canAfford = state.stats.finance >= cost;
@@ -1186,8 +1219,9 @@ function buyUpgrade(upgrade) {
     state.stats.finance -= cost;
     state.purchasedUpgrades.add(upgrade.id);
 
-    // Apply immediate bonus if exists (we can also check and handle it)
+    // Apply immediate bonus if exists
     updateStatsUI();
+    updateModalStatsUI();
     
     // Refresh Shop UI
     setupShopUI();
