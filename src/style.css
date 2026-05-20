@@ -456,23 +456,14 @@ body {
     transform: translateY(3px);
 }
 
-.stat-indicator.show-increase {
+.stat-indicator.show-neutral {
     opacity: 1;
-    color: #4ade80;
+    color: var(--text-secondary, #9ca3af);
     transform: translateY(0);
 }
-.stat-indicator.show-increase::before {
-    content: "▲";
-    margin-right: 2px;
-}
-
-.stat-indicator.show-decrease {
-    opacity: 1;
-    color: #ef4444;
-    transform: translateY(0);
-}
-.stat-indicator.show-decrease::before {
-    content: "▼";
+.stat-indicator.show-neutral::before {
+    content: "•";
+    font-size: 1.1rem;
     margin-right: 2px;
 }
 

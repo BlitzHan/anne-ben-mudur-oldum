@@ -773,14 +773,9 @@ function displayCard(event) {
                 const card = document.getElementById(`stat-${stat}-card`);
                 
                 if (indicator && val !== 0) {
-                    if (val > 0) {
-                        indicator.textContent = "+";
-                        indicator.className = "stat-indicator show-increase";
-                    } else {
-                        indicator.textContent = "-";
-                        indicator.className = "stat-indicator show-decrease";
-                    }
-                    card.style.borderColor = val > 0 ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+                    indicator.textContent = "";
+                    indicator.className = "stat-indicator show-neutral";
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.25)';
                 }
             });
         });
