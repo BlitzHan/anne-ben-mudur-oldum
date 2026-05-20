@@ -72,3 +72,25 @@ Her 4 haftada bir ay sonu değerlendirmesi yapılır:
 - `/src/events.js`: Haftalık rastgele gelen olaylar listesi ve seçenek etkileri veri havuzu.
 - `/src/shop.js`: Geliştirme pazarında satılan ürünlerin özellikleri.
 - `/src/sound.js`: Oyun içi ses efektlerinin (click, swipe, success, gameover) kontrolü.
+
+---
+
+## 🌐 Küresel Liderlik Tablosu (Global Leaderboard)
+Liderlik tablosu, tarayıcılardan doğrudan bağlanabilen ücretsiz bir **Supabase (PostgreSQL)** veritabanı altyapısı kullanır.
+
+- **Bağlantı Türü:** REST API (SDK kurmaya gerek kalmadan doğrudan tarayıcı `fetch` istekleriyle çalışır).
+- **Tablo Şeması (`leaderboard`):**
+  ```sql
+  create table leaderboard (
+    id bigint generated always as identity primary key,
+    name text not null,
+    score integer not null,
+    difficulty text not null,
+    store_type text not null,
+    date text not null,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null
+  );
+  ```
+- **Güvenlik Politikası (RLS):** Supabase üzerinde `public` olarak okuma (`SELECT`) ve ekleme (`INSERT`) işlemlerine izin verilmiştir.
+- **Yerel Yedekleme (Fallback):** Oyuncu çevrimdışı olduğunda veya veritabanına erişilemediğinde liderlik tablosu otomatik olarak tarayıcının `localStorage` (yerel depolama) verilerini kullanarak oyunu kesintisiz devam ettirir.
+- **Anahtarları Değiştirme:** Kendi Supabase veritabanınızı bağlamak isterseniz, `src/main.js` dosyasının en üstünde yer alan `SUPABASE_URL` ve `SUPABASE_ANON_KEY` sabitlerini kendi projenizin değerleriyle değiştirebilirsiniz.

@@ -2,6 +2,10 @@ import { events } from './events.js';
 import { shopUpgrades } from './shop.js';
 import { sound } from './sound.js';
 
+// Supabase Database Settings (Free Tier Leaderboard Backend)
+const SUPABASE_URL = 'https://oexyvrmgiywivunxlyhh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9leHl2cm1naXl3aXZ1bnhseWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwNTU4NzIsImV4cCI6MjA2MzYzMTg3Mn0.H9d1H-kFmX8667-KzE5BfKj9n7Jt24gqD0YxW_H5Uis';
+
 // ==========================================================================
 // GAME STATE DEFINITION
 // ==========================================================================
@@ -127,32 +131,19 @@ function renderMenuLeaderboard() {
     const listElement = document.getElementById('menu-leaderboard-list');
     if (!listElement) return;
 
-    listElement.innerHTML = '';
-    
-    let scores = [];
-    try {
-        const savedScores = localStorage.getItem('game_leaderboard');
-        scores = savedScores ? JSON.parse(savedScores) : [];
-    } catch (e) {
-        scores = [];
-    }
+    listElement.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
 
-    if (scores.length === 0) {
-        listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
-        return;
-    }
-
-    scores.forEach((entry, index) => {
-        const isTop = index === 0;
-        const item = document.createElement('li');
-        item.className = `leaderboard-item ${isTop ? 'top-rank' : ''}`;
+    fetchGlobalLeaderboard().then(scores => {
+        if (!scores || scores.length === 0) {
+            scores = getLocalScores();
+        }
         
-        item.innerHTML = `
-            <span class="leaderboard-rank">#${index + 1}</span>
-            <span class="leaderboard-date">${entry.date}</span>
-            <span class="leaderboard-score">${entry.score} Hafta</span>
-        `;
-        listElement.appendChild(item);
+        if (scores.length === 0) {
+            listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            return;
+        }
+
+        renderScoreList(listElement, scores);
     });
 }
 
@@ -796,56 +787,139 @@ function triggerGameOver(failedStat) {
     document.getElementById('gameover-screen').classList.remove('hidden');
 }
 
-// Leaderboard storage logic (local storage, top 5 scores)
+// Leaderboard storage logic (Supabase DB + local storage fallback)
 function saveLeaderboard(score) {
-    let scores = [];
-    try {
-        const savedScores = localStorage.getItem('game_leaderboard');
-        scores = savedScores ? JSON.parse(savedScores) : [];
-    } catch (e) {
-        scores = [];
-    }
-
-    // Add current run
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-    scores.push({ score, date: dateStr });
     
-    // Sort descending and slice to top 5
-    scores.sort((a, b) => b.score - a.score);
-    scores = scores.slice(0, 5);
-    
-    localStorage.setItem('game_leaderboard', JSON.stringify(scores));
+    // Save to Local Storage first
+    let localScores = getLocalScores();
+    localScores.push({
+        name: state.playerName || 'Müdür',
+        score: score,
+        difficulty: state.difficulty || 'normal',
+        store_type: state.storeType || 'new_store',
+        date: dateStr
+    });
+    localScores.sort((a, b) => b.score - a.score);
+    localScores = localScores.slice(0, 10); // Keep top 10 locally
+    localStorage.setItem('game_leaderboard', JSON.stringify(localScores));
+
+    // Submit to Supabase DB
+    saveGlobalLeaderboard(state.playerName, score, state.difficulty, state.storeType);
 }
 
-// Render local high score leaderboard list
+// Render high score leaderboard list
 function renderLeaderboard() {
     const listElement = document.getElementById('leaderboard-list');
     if (!listElement) return;
 
-    listElement.innerHTML = '';
-    
-    let scores = [];
+    listElement.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+
+    fetchGlobalLeaderboard().then(scores => {
+        if (!scores || scores.length === 0) {
+            scores = getLocalScores();
+        }
+        
+        if (scores.length === 0) {
+            listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            return;
+        }
+
+        renderScoreList(listElement, scores);
+    });
+}
+
+// Fetch leaderboard from Supabase DB (free tier REST endpoint)
+async function fetchGlobalLeaderboard() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
+        
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=*&order=score.desc&limit=10`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error('Supabase response error');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Liderlik tablosu çekilemedi, yerel skorlar kullanılacak:', error);
+        return null;
+    }
+}
+
+// Save score to Supabase DB (free tier REST endpoint)
+async function saveGlobalLeaderboard(name, score, difficulty, storeType) {
+    const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
+        
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+                name: name || 'Müdür',
+                score: score,
+                difficulty: difficulty || 'normal',
+                store_type: storeType || 'new_store',
+                date: dateStr
+            }),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response.ok;
+    } catch (error) {
+        console.error('Global skora gönderilemedi, yerel olarak kaydedildi:', error);
+        return false;
+    }
+}
+
+// Local Storage scores retrieval helper
+function getLocalScores() {
     try {
         const savedScores = localStorage.getItem('game_leaderboard');
-        scores = savedScores ? JSON.parse(savedScores) : [];
+        return savedScores ? JSON.parse(savedScores) : [];
     } catch (e) {
-        scores = [];
+        return [];
     }
+}
 
-    if (scores.length === 0) {
-        listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.8rem;">Henüz kayıtlı skor bulunmuyor.</li>';
-        return;
-    }
-
+// Render structured list helper
+function renderScoreList(listElement, scores) {
+    listElement.innerHTML = '';
     scores.forEach((entry, index) => {
         const isTop = index === 0;
         const item = document.createElement('li');
         item.className = `leaderboard-item ${isTop ? 'top-rank' : ''}`;
         
+        const name = entry.name || 'Müdür';
+        const score = entry.score || 0;
+        const date = entry.date || '';
+        const storeLabel = STORE_LABELS[entry.store_type] || 'Yeni Açılan Mağaza';
+        const diffLabel = DIFFICULTY_LABELS[entry.difficulty] || 'Normal';
+        
         item.innerHTML = `
-            <span class="leaderboard-rank">#${index + 1}</span>
-            <span class="leaderboard-date">${entry.date}</span>
-            <span class="leaderboard-score">${entry.score} Hafta</span>
+            <div class="leaderboard-item-main">
+                <span class="leaderboard-rank">#${index + 1}</span>
+                <span class="leaderboard-name">${name}</span>
+                <span class="leaderboard-score">${score} Hafta</span>
+            </div>
+            <div class="leaderboard-item-sub">
+                <span>${storeLabel} (${diffLabel})</span>
+                <span class="leaderboard-date">${date}</span>
+            </div>
         `;
         listElement.appendChild(item);
     });
