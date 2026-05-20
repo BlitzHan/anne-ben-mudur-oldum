@@ -131,10 +131,27 @@
                     </div>
                 </div>
 
+                <!-- Active Campaign Alert Banner -->
+                <div id="campaign-banner" class="campaign-banner glass-panel hidden">
+                    <span class="campaign-icon">⚡</span>
+                    <div class="campaign-text-wrapper">
+                        <span class="campaign-title" id="campaign-banner-title">KAMPANYA AKTİF</span>
+                        <span id="campaign-banner-desc" class="campaign-desc-text">İndirim haftaları!</span>
+                    </div>
+                </div>
+
                 <!-- Scenario Card -->
                 <div id="event-card-container" class="card-container">
                     <div id="event-card" class="event-card glass-panel">
                         <div class="card-inner">
+                            <!-- Character Speaking Info (NPC Badge) -->
+                            <div id="card-npc-badge" class="card-npc-badge hidden">
+                                <span id="card-npc-emoji" class="npc-emoji">👔</span>
+                                <div class="npc-info">
+                                    <span id="card-npc-name" class="npc-name">Batıkan Bey</span>
+                                    <span id="card-npc-title" class="npc-title">Bölge Müdürü</span>
+                                </div>
+                            </div>
                             <div class="card-category" id="card-tag">GÜNLÜK OPERASYON</div>
                             <div class="card-graphic-wrapper" id="card-graphic">
                                 <span class="graphic-emoji">✨</span>
@@ -179,6 +196,9 @@
                     <button id="leaderboard-btn" class="action-btn menu-btn">
                         <i class="fas fa-trophy"></i> <span>Liderlik Sıralaması</span>
                     </button>
+                    <button id="achievements-btn" class="action-btn menu-btn">
+                        <i class="fas fa-award"></i> <span>Başarımlar</span>
+                    </button>
                 </div>
             </div>
 
@@ -189,9 +209,18 @@
                 </div>
                 <div class="menu-scroll-body form-body">
                     <!-- Manager Name -->
-                    <div class="form-group">
-                        <label for="setup-name" class="form-label">Müdür Adı</label>
-                        <input type="text" id="setup-name" class="setup-input" placeholder="Müdür adını girin..." maxlength="20">
+                    <div class="form-group name-group-wrapper">
+                        <label for="setup-name" class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Müdür Adı</span>
+                            <span class="required-badge">* Zorunlu</span>
+                        </label>
+                        <div class="name-input-container" style="display: flex; gap: 8px;">
+                            <input type="text" id="setup-name" class="setup-input" placeholder="Adınızı yazın veya zar atın..." maxlength="20" style="flex: 1;">
+                            <button type="button" id="setup-random-name-btn" class="random-name-btn" style="width: auto; padding: 12px 16px; margin: 0; display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 0.9rem;">
+                                🎲 Zar At
+                            </button>
+                        </div>
+                        <span id="setup-name-error" class="input-error-msg hidden" style="color: var(--color-danger); font-size: 0.8rem; margin-top: 6px; display: block; font-weight: 500;">⚠️ Lütfen bir müdür adı girin veya Zar At butonunu kullanın!</span>
                     </div>
 
                     <!-- Store Scenario Selection -->
@@ -311,6 +340,21 @@
                     </ol>
                 </div>
                 <button id="leaderboard-back-btn" class="action-btn menu-btn">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </button>
+            </div>
+
+            <!-- Achievements Sub-Panel -->
+            <div class="menu-container glass-panel animated-modal hidden" id="menu-achievements-panel">
+                <div class="menu-header">
+                    <h2>🏆 Kazanılan Başarımlar</h2>
+                </div>
+                <div class="menu-scroll-body form-body">
+                    <div class="achievements-grid" id="achievements-list">
+                        <!-- Dynamic achievements will be inserted here -->
+                    </div>
+                </div>
+                <button id="achievements-back-btn" class="action-btn menu-btn">
                     <i class="fas fa-arrow-left"></i> Geri Dön
                 </button>
             </div>

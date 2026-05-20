@@ -29,8 +29,24 @@ let state = {
     deck: [],
     currentEvent: null,
     isGameOver: false,
-    highScore: 0
+    highScore: 0,
+    activeCampaign: null,
+    campaignWeeksLeft: 0,
+    blackFridayWarning: false,
+    unlockedAchievements: []
 };
+
+// Achievements Database
+const ACHIEVEMENTS = [
+    { id: 'first_month', title: 'İlk Ayı Devirdik', desc: 'Müdürlükte 4 haftayı başarıyla geride bırak.', emoji: '📅' },
+    { id: 'clutch', title: 'Kriz Yönetmeni', desc: 'Herhangi bir kaynağın %10\'un altına düştüğü bir haftayı atlat.', emoji: '🛡️' },
+    { id: 'capitalist', title: 'Kasa Ağzına Kadar Dolu', desc: 'Kasa bütçesini %100 seviyesine ulaştır.', emoji: '💰' },
+    { id: 'union', title: 'Sendikalı Mağaza', desc: 'Personel moralini %100 seviyesine ulaştır.', emoji: '🤝' },
+    { id: 'hq_fave', title: 'Bölge Müdürünün Sağ Kolu', desc: 'Bölge mutluluğunu %100 seviyesine ulaştır.', emoji: '👔' },
+    { id: 'customer_champion', title: 'Tüketici Dostu', desc: 'Müşteri memnuniyetini %100 seviyesine ulaştır.', emoji: '🌟' },
+    { id: 'black_friday_survivor', title: 'İndirim Fatihi', desc: 'Black Friday kampanya haftalarını tüm kaynaklar %20\'nin üzerindeyken bitir.', emoji: '🔥' },
+    { id: 'legend', title: 'Efsane Müdür', desc: 'Simülasyonda 100 hafta boyunca görevde kal.', emoji: '👑' }
+];
 
 // Available Monthly Goals pool
 const GOALS_POOL = [
@@ -71,7 +87,43 @@ function setupStartMenu() {
         sound.playClick();
         menuMain.classList.add('hidden');
         menuSetup.classList.remove('hidden');
+        
+        // Reset name error state
+        const nameInputEl = document.getElementById('setup-name');
+        const nameErrorEl = document.getElementById('setup-name-error');
+        if (nameInputEl) nameInputEl.classList.remove('error-glow');
+        if (nameErrorEl) nameErrorEl.classList.add('hidden');
     });
+
+    // Name Input Event Listener to clear errors on typing
+    const nameInputEl = document.getElementById('setup-name');
+    const nameErrorEl = document.getElementById('setup-name-error');
+    if (nameInputEl) {
+        nameInputEl.addEventListener('input', () => {
+            if (nameInputEl.value.trim() !== '') {
+                nameInputEl.classList.remove('error-glow');
+                if (nameErrorEl) nameErrorEl.classList.add('hidden');
+            }
+        });
+    }
+
+    // Random Name Button Click Listener
+    const randomBtn = document.getElementById('setup-random-name-btn');
+    if (randomBtn && nameInputEl) {
+        randomBtn.addEventListener('click', () => {
+            sound.playClick();
+            const RANDOM_NAMES = [
+                "Batıkan Bey", "Semih Bey", "Fırat Bey", "Gizem Hanım",
+                "Girişimci Müdür", "Kriz Fatihi", "Aura Müdürü", "Borçlu Müdür",
+                "Kampanya Canavarı", "Müşteri Dostu Can", "Bölge Yıldızı", "Efsane Müdür",
+                "Ciro Şampiyonu", "Prim Avcısı", "Süpervizör Selim", "Perakende Fatihi"
+            ];
+            const randomIdx = Math.floor(Math.random() * RANDOM_NAMES.length);
+            nameInputEl.value = RANDOM_NAMES[randomIdx];
+            nameInputEl.classList.remove('error-glow');
+            if (nameErrorEl) nameErrorEl.classList.add('hidden');
+        });
+    }
 
     // Setup Back button
     document.getElementById('setup-back-btn').addEventListener('click', () => {
@@ -82,10 +134,26 @@ function setupStartMenu() {
 
     // Setup Start button (Simülasyonu Başlat)
     document.getElementById('setup-start-btn').addEventListener('click', () => {
-        sound.playClick();
-        
         const nameInput = document.getElementById('setup-name').value.trim();
-        state.playerName = nameInput || 'Müdür';
+        
+        if (!nameInput) {
+            // Show error, shake input, play warning sound, and stop
+            if (nameInputEl) {
+                nameInputEl.classList.add('error-glow');
+                // Force animation replay
+                nameInputEl.style.animation = 'none';
+                void nameInputEl.offsetWidth;
+                nameInputEl.style.animation = '';
+            }
+            if (nameErrorEl) {
+                nameErrorEl.classList.remove('hidden');
+            }
+            sound.playWarning();
+            return;
+        }
+
+        sound.playClick();
+        state.playerName = nameInput;
         
         state.storeType = document.querySelector('input[name="store-type"]:checked').value;
         state.difficulty = document.querySelector('input[name="difficulty"]:checked').value;
@@ -125,6 +193,21 @@ function setupStartMenu() {
         menuLeaderboard.classList.add('hidden');
         menuMain.classList.remove('hidden');
     });
+
+    // Achievements button
+    document.getElementById('achievements-btn').addEventListener('click', () => {
+        sound.playClick();
+        menuMain.classList.add('hidden');
+        document.getElementById('menu-achievements-panel').classList.remove('hidden');
+        renderAchievements();
+    });
+
+    // Achievements Back button
+    document.getElementById('achievements-back-btn').addEventListener('click', () => {
+        sound.playClick();
+        document.getElementById('menu-achievements-panel').classList.add('hidden');
+        menuMain.classList.remove('hidden');
+    });
 }
 
 function renderMenuLeaderboard() {
@@ -144,6 +227,71 @@ function renderMenuLeaderboard() {
         }
 
         renderScoreList(listElement, scores);
+    });
+}
+
+// ==========================================================================
+// ACHIEVEMENTS MANAGEMENT
+// ==========================================================================
+function triggerAchievementUnlock(id) {
+    let unlocked = JSON.parse(localStorage.getItem('aura_unlocked_achievements') || '[]');
+    if (unlocked.includes(id)) return;
+    
+    unlocked.push(id);
+    localStorage.setItem('aura_unlocked_achievements', JSON.stringify(unlocked));
+    state.unlockedAchievements = unlocked;
+
+    const ach = ACHIEVEMENTS.find(a => a.id === id);
+    if (!ach) return;
+
+    // Create or find toast container
+    let toast = document.getElementById('achievement-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'achievement-toast';
+        toast.className = 'achievement-toast';
+        document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = `
+        <div class="toast-icon">${ach.emoji}</div>
+        <div class="toast-body">
+            <span class="toast-heading">Başarım Açıldı!</span>
+            <span class="toast-name">${ach.title}</span>
+        </div>
+    `;
+
+    sound.playSuccess();
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+function renderAchievements() {
+    const listElement = document.getElementById('achievements-list');
+    if (!listElement) return;
+
+    listElement.innerHTML = '';
+    
+    // Ensure unlockedAchievements is populated
+    state.unlockedAchievements = JSON.parse(localStorage.getItem('aura_unlocked_achievements') || '[]');
+
+    ACHIEVEMENTS.forEach(ach => {
+        const isUnlocked = state.unlockedAchievements.includes(ach.id);
+        const card = document.createElement('div');
+        card.className = `achievement-card-box ${isUnlocked ? 'unlocked' : 'locked'}`;
+        card.innerHTML = `
+            <div class="achievement-icon-wrapper">
+                ${isUnlocked ? ach.emoji : '🔒'}
+            </div>
+            <div class="achievement-info">
+                <span class="achievement-title">${ach.title}</span>
+                <span class="achievement-desc">${ach.desc}</span>
+            </div>
+        `;
+        listElement.appendChild(card);
     });
 }
 
@@ -214,12 +362,14 @@ function bindActionButtons() {
             const menuSetup = document.getElementById('menu-setup');
             const menuRules = document.getElementById('menu-rules');
             const menuLeaderboard = document.getElementById('menu-leaderboard-panel');
+            const menuAchievements = document.getElementById('menu-achievements-panel');
             
             welcomeScreen.classList.remove('hidden');
             menuMain.classList.remove('hidden');
             menuSetup.classList.add('hidden');
             menuRules.classList.add('hidden');
             menuLeaderboard.classList.add('hidden');
+            if (menuAchievements) menuAchievements.classList.add('hidden');
             
             state.isGameOver = true;
         }
@@ -246,6 +396,10 @@ function startNewGame() {
     state.purchasedUpgrades.clear();
     state.isGameOver = false;
     state.deck = [];
+    state.activeCampaign = null;
+    state.campaignWeeksLeft = 0;
+    state.blackFridayWarning = false;
+    state.unlockedAchievements = JSON.parse(localStorage.getItem('aura_unlocked_achievements') || '[]');
     
     // Update header info dynamically
     document.getElementById('header-subtitle').innerHTML = `
@@ -262,6 +416,9 @@ function startNewGame() {
     // Reset active upgrades visual list
     document.getElementById('upgrades-widget').classList.add('hidden');
     document.getElementById('active-upgrades-list').innerHTML = '';
+
+    // Update campaign banner to hidden
+    updateCampaignBannerUI();
     
     // Assign first month goal
     assignNewGoal();
@@ -288,23 +445,75 @@ function shuffle(array) {
 
 // Draw next event card from deck
 function drawNextCard() {
-    if (state.deck.length === 0) {
-        state.deck = shuffle(events);
+    const absoluteWeek = getSurvivalScore() + 1;
+    const cycleWeek = ((absoluteWeek - 1) % 48) + 1;
+
+    let event = null;
+
+    if (cycleWeek === 12 && state.activeCampaign !== 'black_friday') {
+        state.activeCampaign = 'black_friday';
+        state.campaignWeeksLeft = 3;
+        state.blackFridayWarning = false;
+        event = events.find(e => e.id === 'campaign_black_friday_intro');
+    } else if (cycleWeek === 24 && state.activeCampaign !== 'new_year') {
+        state.activeCampaign = 'new_year';
+        state.campaignWeeksLeft = 3;
+        event = events.find(e => e.id === 'campaign_new_year_intro');
+    } else if (cycleWeek === 36 && state.activeCampaign !== 'audit') {
+        state.activeCampaign = 'audit';
+        state.campaignWeeksLeft = 2;
+        event = events.find(e => e.id === 'campaign_audit_intro');
     }
-    
-    let event = state.deck.pop();
-    
-    // Upgrade condition checks
-    // If we have Heavy Duty AC upgrade, skip Klima Arızası (ac_broke) event
-    if (event.id === "ac_broke" && state.purchasedUpgrades.has("heavy_duty_ac")) {
+
+    if (!event) {
         if (state.deck.length === 0) {
-            state.deck = shuffle(events);
+            state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_')));
         }
-        event = state.deck.pop(); // draw another
+        event = state.deck.pop();
+        
+        // Upgrade condition checks
+        if (event.id === "ac_broke" && state.purchasedUpgrades.has("heavy_duty_ac")) {
+            if (state.deck.length === 0) {
+                state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_')));
+            }
+            event = state.deck.pop(); // draw another
+        }
     }
-    
+
+    // Now update campaign banner display
+    updateCampaignBannerUI();
+
     state.currentEvent = event;
     displayCard(event);
+}
+
+function updateCampaignBannerUI() {
+    const banner = document.getElementById('campaign-banner');
+    const title = document.getElementById('campaign-banner-title');
+    const desc = document.getElementById('campaign-banner-desc');
+
+    if (!banner) return;
+
+    if (state.activeCampaign && state.campaignWeeksLeft > 0) {
+        banner.classList.remove('hidden');
+        banner.className = 'campaign-banner glass-panel'; // Reset classes
+        
+        if (state.activeCampaign === 'black_friday') {
+            banner.classList.add('theme-black-friday');
+            title.textContent = '🔥 BLACK FRIDAY AKTİF';
+            desc.textContent = `İndirim çılgınlığı! (Kalan Süre: ${state.campaignWeeksLeft} Hafta)`;
+        } else if (state.activeCampaign === 'new_year') {
+            banner.classList.add('theme-new-year');
+            title.textContent = '🎁 YILBAŞI KAMPANYASI AKTİF';
+            desc.textContent = `Hediye alışverişi! (Kalan Süre: ${state.campaignWeeksLeft} Hafta)`;
+        } else if (state.activeCampaign === 'audit') {
+            banner.classList.add('theme-audit');
+            title.textContent = '📋 GENEL MERKEZ DENETİMİ';
+            desc.textContent = `Denetmenler Mağazada! (Kalan Süre: ${state.campaignWeeksLeft} Hafta)`;
+        }
+    } else {
+        banner.classList.add('hidden');
+    }
 }
 
 // Populate card details in UI with entering animation & dynamic options
@@ -317,8 +526,26 @@ function displayCard(event) {
     // Force layout reflow to restart animations
     void cardElement.offsetWidth;
     
-    // Set text elements
-    document.getElementById('card-tag').textContent = event.category;
+    // Set NPC badge or regular category tag
+    const npcBadge = document.getElementById('card-npc-badge');
+    const cardTag = document.getElementById('card-tag');
+    
+    if (event.character) {
+        if (npcBadge) {
+            document.getElementById('card-npc-emoji').textContent = event.character.emoji;
+            document.getElementById('card-npc-name').textContent = event.character.name;
+            document.getElementById('card-npc-title').textContent = event.character.title;
+            npcBadge.classList.remove('hidden');
+        }
+        if (cardTag) cardTag.classList.add('hidden');
+    } else {
+        if (npcBadge) npcBadge.classList.add('hidden');
+        if (cardTag) {
+            cardTag.textContent = event.category;
+            cardTag.classList.remove('hidden');
+        }
+    }
+
     document.getElementById('card-graphic').innerHTML = `<span class="graphic-emoji">${event.emoji}</span>`;
     document.getElementById('card-title').textContent = event.title;
     document.getElementById('card-desc').textContent = event.desc;
@@ -472,6 +699,27 @@ function getModifiedEffect(stat, val, eventId) {
         }
     }
 
+    // 2.5 Active Campaign Modifiers
+    if (state.activeCampaign === 'black_friday') {
+        if (stat === 'finance' && modifier > 0) {
+            modifier = Math.round(modifier * 1.5);
+        }
+        if (stat === 'staff' && modifier < 0) {
+            modifier = Math.round(modifier * 1.5);
+        }
+    } else if (state.activeCampaign === 'new_year') {
+        if (stat === 'customer') {
+            modifier = Math.round(modifier * 1.4);
+        }
+        if (stat === 'finance' && modifier > 0) {
+            modifier = Math.round(modifier * 1.2);
+        }
+    } else if (state.activeCampaign === 'audit') {
+        if (stat === 'hq') {
+            modifier = Math.round(modifier * 1.6);
+        }
+    }
+
     // 3. Passive Upgrades
     if (modifier < 0) {
         if (state.purchasedUpgrades.has("security_cams") && (eventId === "stolen_headphones" || eventId === "night_robbery")) {
@@ -493,6 +741,9 @@ function getModifiedEffect(stat, val, eventId) {
 function applyStatsModification(effects) {
     const eventId = state.currentEvent ? state.currentEvent.id : null;
     
+    // Check if any metric is currently under 10% before choice results are applied
+    let hadLowStat = Object.keys(state.stats).some(stat => state.stats[stat] < 10);
+
     Object.keys(effects).forEach(stat => {
         const val = effects[stat];
         const modifier = getModifiedEffect(stat, val, eventId);
@@ -503,7 +754,28 @@ function applyStatsModification(effects) {
     });
 
     updateStatsUI();
-    checkGameOverConditions();
+    const isOver = checkGameOverConditions();
+
+    if (!isOver) {
+        // Achievement: Clutch (Survive a turn where any metric was under 10%)
+        if (hadLowStat) {
+            triggerAchievementUnlock('clutch');
+        }
+
+        // Achievement checks for 100% metrics
+        if (state.stats.finance === 100) triggerAchievementUnlock('capitalist');
+        if (state.stats.staff === 100) triggerAchievementUnlock('union');
+        if (state.stats.hq === 100) triggerAchievementUnlock('hq_fave');
+        if (state.stats.customer === 100) triggerAchievementUnlock('customer_champion');
+
+        // Check if black friday warning needs to be set (if any stat goes < 20% during black friday)
+        if (state.activeCampaign === 'black_friday') {
+            const hasUnder20 = Object.keys(state.stats).some(stat => state.stats[stat] < 20);
+            if (hasUnder20) {
+                state.blackFridayWarning = true;
+            }
+        }
+    }
 }
 
 // Update stats bars and numbers in UI
@@ -539,7 +811,31 @@ function updateStatsUI() {
 
 // Advance calendar date
 function progressTime() {
+    // Campaign decrement progression
+    if (state.activeCampaign && state.campaignWeeksLeft > 0) {
+        state.campaignWeeksLeft -= 1;
+        if (state.campaignWeeksLeft === 0) {
+            // Campaign ended!
+            if (state.activeCampaign === 'black_friday' && !state.blackFridayWarning) {
+                triggerAchievementUnlock('black_friday_survivor');
+            }
+            state.activeCampaign = null;
+            updateCampaignBannerUI();
+        } else {
+            updateCampaignBannerUI();
+        }
+    }
+
     state.date.week += 1;
+
+    // Survive checks for achievements
+    const weeksSurvived = getSurvivalScore();
+    if (weeksSurvived >= 4) {
+        triggerAchievementUnlock('first_month');
+    }
+    if (weeksSurvived >= 100) {
+        triggerAchievementUnlock('legend');
+    }
     
     if (state.date.week > 4) {
         // Month end reached, trigger evaluation report

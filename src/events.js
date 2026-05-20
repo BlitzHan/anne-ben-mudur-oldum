@@ -5,6 +5,7 @@ export const events = [
         category: "GÜNLÜK OPERASYON",
         emoji: "🥵",
         desc: "Aura Store'un minimalist dev cam cephesi klima arızasıyla birleşince içerisi seraya döndü! Personel terliyor, müşteriler kaçıyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
         options: [
             {
                 text: "Hemen en iyi teknik ekibi çağırıp sistemi sıfırla.",
@@ -22,6 +23,7 @@ export const events = [
         category: "MÜŞTERİ DENEYİMİ",
         emoji: "📱",
         desc: "Bir müşteri, 2 yıl önce aldığı ve ekranı tamamen tuzla buz olmuş AuraPhone'u 'kendi kendine çatladı' diyerek iade etmek istiyor.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Müşteri sadakati adına sıfırıyla değişim yap.",
@@ -39,6 +41,7 @@ export const events = [
         category: "ANİ OLAY",
         emoji: "🤵",
         desc: "Bölge Direktörü yarın sabah mağazamıza geliyor. Camların pürüzsüz, masaların tozsuz olması gerek.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
         options: [
             {
                 text: "Personeli gece mesaisine bırakıp mağazayı parlattır.",
@@ -77,6 +80,7 @@ export const events = [
         category: "PERSONEL YÖNETİMİ",
         emoji: "💖",
         desc: "Reyonlarda görevli iki çalışanımızın teknik oda arkasında flörtleştiği ortaya çıktı. Dedikodular kuyrukları uzatıyor.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Uyar ve ikisinin vardiya saatlerini tamamen ayır.",
@@ -94,6 +98,7 @@ export const events = [
         category: "GÜNLÜK OPERASYON",
         emoji: "📐",
         desc: "Müşterinin biri stanttaki kutusuz ve kalemi kayıp son AuraPad Air teşhir ürününü almak için %30 indirim talep ediyor.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "İndirimi onaylayıp ürünü elden çıkar.",
@@ -111,6 +116,7 @@ export const events = [
         category: "GÜVENLİK",
         emoji: "🎧",
         desc: "Bir şüphelinin teşhir standındaki AuraPods Max kulaklığı kablosunu kesip cebine attığını ve çıkışa koştuğunu gördünüz.",
+        character: { name: "Şüpheli Şahıs", title: "Hırsız", emoji: "🕶️" },
         options: [
             {
                 text: "Personelle birlikte peşinden koşup sokakta yakala!",
@@ -149,6 +155,7 @@ export const events = [
         category: "PAZARLAMA",
         emoji: "🤳",
         desc: "Ünlü bir tech-influencer, mağazada kutu açılım videosu çekip paylaşmak karşılığında bedava AuraPods Max talep ediyor.",
+        character: { name: "Gizem", title: "Teknoloji Influencer'ı", emoji: "🤳" },
         options: [
             {
                 text: "Kulaklığı hediye et, viral tanıtımın gücünü kullan.",
@@ -166,6 +173,7 @@ export const events = [
         category: "ANİ OLAY",
         emoji: "💳",
         desc: "İnternet altyapısındaki sorun nedeniyle Aura ödeme sistemi çalışmıyor! Kasalarda kart çekilemiyor, kuyruk uzuyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
         options: [
             {
                 text: "Kuyruktakilere içecek ikram edip teknik masaya yönlendir.",
@@ -200,6 +208,7 @@ export const events = [
         category: "MÜŞTERİ DENEYİMİ",
         emoji: "🏷️",
         desc: "Normalde 60.000₺ olan AuraBook Pro'nun fiyatı sisteme yanlışlıkla 6.000₺ girilmiş. Bir müşteri bu fiyattan almak için diretiyor.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Hatamızı kabul et ve AuraBook'u 6.000₺'ye ver.",
@@ -217,6 +226,7 @@ export const events = [
         category: "KAMPANYA",
         emoji: "🐦",
         desc: "Bir çalışanımızın yaşlı bir teyzeye AuraPhone'u anlamadığı için sesini yükselttiği video Twitter'da viral oldu ve linç yiyoruz.",
+        character: { name: "Gizem", title: "Teknoloji Influencer'ı", emoji: "🤳" },
         options: [
             {
                 text: "Çalışanı hemen kov ve kamuoyuna açık özür mektubu yayınla.",
@@ -234,6 +244,7 @@ export const events = [
         category: "PERSONEL YÖNETİMİ",
         emoji: "🎂",
         desc: "Bugün sizin doğum gününüz! Ekip sürpriz pasta almış ve akşam mağazayı 1 saat erken kapatıp kutlamayı öneriyor.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Süper! Kepenkleri indirin, parti başlasın.",
@@ -268,6 +279,7 @@ export const events = [
         category: "BÖLGE YÖNETİMİ",
         emoji: "🎁",
         desc: "Bölge yönetimi, ekibi ve sadık müşterileri ödüllendirmeniz için mağazamıza 20 adet hediye çeki gönderdi.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
         options: [
             {
                 text: "Gelen müşterilere hediye et, sadakati artır.",
@@ -285,6 +297,7 @@ export const events = [
         category: "ANİ OLAY",
         emoji: "🕵️",
         desc: "Dün gece store'un devasa minimalist ön camını kıran hırsızlar, stantlardaki AuraPhone ve AuraWatch'ları çalıp kaçmış.",
+        character: { name: "Şüpheli Şahıs", title: "Hırsız", emoji: "🕶️" },
         options: [
             {
                 text: "Bölge yönetimine rapor ver ve sigorta işlemleriyle uğraş.",
@@ -302,6 +315,7 @@ export const events = [
         category: "BÖLGE YÖNETİMİ",
         emoji: "🚁",
         desc: "Aura Global CEO'sunun helikopterle bölgeye iniş yaptığı ve 20 dakika sonra store'u teftiş edeceği bildirildi!",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
         options: [
             {
                 text: "Herkesi sıraya diz, CEO'yu ayakta alkışlarla karşıla.",
@@ -323,6 +337,7 @@ export const events = [
         category: "GÜNLÜK OPERASYON",
         emoji: "📋",
         desc: "Yıllık büyük stok sayım zamanı. Personel ekip hafta sonu boyunca depoda kutu sayıp barkod okutmak zorunda.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Mesai ücretlerini kasadan çift olarak öde ve ekibi motive et.",
@@ -340,6 +355,7 @@ export const events = [
         category: "PERSONEL YÖNETİMİ",
         emoji: "💵",
         desc: "Personel ekibinden bir çalışan, gün sonu kasasında sahte bir 200₺ banknot kabul ettiğini panik içinde itiraf etti.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
         options: [
             {
                 text: "Zararı personelin maaşından kes, gözünü açsın.",
@@ -348,6 +364,50 @@ export const events = [
             {
                 text: "Canı sağ olsun, zararı kasa bütçesinden amorti et.",
                 effect: { staff: 15, customer: 0, hq: -5, finance: -5 }
+            }
+        ]
+    },
+    
+    // CAMPAIGN INTRODUCTION SPECIAL EVENTS (Injected dynamically)
+    {
+        id: "campaign_black_friday_intro",
+        title: "Büyük İndirim Kapıda!",
+        category: "KAMPANYA ÖNCESİ",
+        emoji: "🔥",
+        desc: "Batıkan Bey mağazaya uğradı: 'Müdür Bey, önümüzdeki 3 hafta boyunca Black Friday indirimleri aktif olacak. Satışlar artacak ama personel çok yorulacak. Hazır mıyız?'",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Hazırız, kapıları indirimlere açalım! (Finans Kazançları x1.5, Personel Kayıpları x1.5)",
+                effect: { staff: 0, customer: 0, hq: 0, finance: 0 }
+            }
+        ]
+    },
+    {
+        id: "campaign_new_year_intro",
+        title: "Yılbaşı Heyecanı!",
+        category: "KAMPANYA ÖNCESİ",
+        emoji: "🎁",
+        desc: "Gizem mağazada çekim yaparken heyecanla yanınıza geldi: 'Yılbaşı çılgınlığı başlıyor! Herkes hediye arayışında. Paylaşımlarımla mağazayı tıklım tıklım dolduracağım!'",
+        character: { name: "Gizem", title: "Teknoloji Influencer'ı", emoji: "🤳" },
+        options: [
+            {
+                text: "Mağazayı yılbaşı süsleriyle donatın! (Müşteri Deneyimi Etkileri x1.4, Finans Kazançları x1.2)",
+                effect: { staff: 0, customer: 0, hq: 0, finance: 0 }
+            }
+        ]
+    },
+    {
+        id: "campaign_audit_intro",
+        title: "Acil Teftiş Dönemi!",
+        category: "KAMPANYA ÖNCESİ",
+        emoji: "📋",
+        desc: "Batıkan Bey ciddi bir yüz ifadesiyle aradı: 'Müdür, genel müdürlükten denetmenler bölgeye geliyor. Önümüzdeki 2 hafta boyunca gözümüz üzerinizde olacak.'",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Tüm hazırlıkları yapalım, denetimden alnımızın akıyla çıkalım! (Bölge Mutluluğu Etkileri x1.6)",
+                effect: { staff: 0, customer: 0, hq: 0, finance: 0 }
             }
         ]
     }
