@@ -1550,3 +1550,329 @@ body {
 .hidden {
     display: none !important;
 }
+
+/* ==========================================================================
+   MOBILE & RESPONSIVE DESIGN ENHANCEMENTS
+   ========================================================================== */
+
+/* Medium Screens (e.g., Tablets, Small Laptops) */
+@media (max-width: 768px) {
+    #app {
+        padding: 12px;
+    }
+    
+    .game-container {
+        gap: 16px;
+    }
+    
+    .game-header {
+        padding: 12px 16px;
+    }
+    
+    .stats-board {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .event-card {
+        padding: 24px;
+    }
+    
+    .card-desc {
+        margin-bottom: 20px;
+        min-height: auto;
+    }
+    
+    .choices-container {
+        gap: 10px;
+    }
+    
+    .choice-btn {
+        padding: 10px 14px;
+    }
+    
+    .option-text {
+        font-size: 0.85rem;
+    }
+    
+    .menu-container {
+        padding: 24px;
+        gap: 20px;
+    }
+    
+    .menu-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* Small Screens (e.g., Mobile Phones <= 600px) */
+@media (max-width: 600px) {
+    /* Header Reorganization for Mobile */
+    .game-header {
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+    }
+    
+    .header-logo {
+        order: 1;
+        width: calc(100% - 140px); /* Leave room for buttons */
+    }
+    
+    .logo-text h1 {
+        font-size: 1.15rem;
+    }
+    
+    .logo-text .subtitle {
+        font-size: 0.65rem;
+    }
+    
+    .header-controls {
+        order: 2;
+        gap: 6px;
+        align-items: center;
+    }
+    
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .header-date-container {
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    
+    .date-badge, .score-badge {
+        flex: 1;
+        min-width: 0;
+        padding: 6px;
+        border-radius: 10px;
+    }
+    
+    .date-value, .score-value {
+        font-size: 0.85rem;
+    }
+    
+    .date-label, .score-label {
+        font-size: 0.6rem;
+    }
+    
+    /* Stats Board smaller margins */
+    .stats-board {
+        gap: 8px;
+    }
+    
+    .stat-card {
+        padding: 10px;
+        border-radius: 14px;
+    }
+    
+    .stat-header {
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+    
+    .stat-icon-wrapper {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    /* Event card optimization */
+    .event-card {
+        padding: 16px;
+        border-radius: 18px;
+    }
+    
+    .card-graphic-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .graphic-emoji {
+        font-size: 2.2rem;
+    }
+    
+    .card-title {
+        font-size: 1.15rem;
+        margin-bottom: 8px;
+    }
+    
+    .card-desc {
+        font-size: 0.8rem;
+        margin-bottom: 16px;
+        line-height: 1.5;
+        min-height: auto;
+    }
+    
+    .choice-btn {
+        padding: 8px 12px;
+        border-radius: 10px;
+    }
+    
+    .option-label {
+        font-size: 0.55rem;
+    }
+    
+    .option-text {
+        font-size: 0.78rem;
+        line-height: 1.35;
+    }
+    
+    .choice-effects {
+        gap: 4px;
+        margin-top: 4px;
+    }
+    
+    .effect-badge {
+        font-size: 0.6rem;
+        padding: 1px 6px;
+    }
+    
+    /* Onboarding Screen Setup Panel */
+    #menu-setup {
+        padding: 16px;
+        max-height: 90vh;
+        width: 95%;
+    }
+    
+    .menu-title {
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .form-body {
+        gap: 14px;
+    }
+    
+    .store-card-content {
+        padding: 10px;
+        border-radius: 12px;
+    }
+    
+    .store-card-header {
+        font-size: 0.9rem;
+    }
+    
+    .store-card-perks {
+        font-size: 0.72rem;
+    }
+    
+    .diff-btn span {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+    
+    .setup-actions {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .setup-actions .menu-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Shop Upgrades inside Modal */
+    .modal-content {
+        padding: 16px;
+        width: 95%;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.15rem;
+    }
+    
+    .shop-items-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .shop-item {
+        padding: 10px;
+        border-radius: 12px;
+    }
+    
+    .shop-item-name {
+        font-size: 0.8rem;
+    }
+    
+    .shop-item-desc {
+        font-size: 0.65rem;
+    }
+    
+    .shop-item-effect {
+        font-size: 0.65rem;
+    }
+    
+    /* Game Over Modal */
+    .gameover-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .gameover-title {
+        font-size: 1.5rem;
+    }
+    
+    .gameover-reason {
+        font-size: 0.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .gameover-stats-grid {
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .gameover-stat-box {
+        padding: 8px 4px;
+    }
+    
+    .gameover-stat-box .val {
+        font-size: 1.1rem;
+    }
+}
+
+/* Extra Small Screens (<= 360px) */
+@media (max-width: 360px) {
+    .stats-board {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-logo {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 4px;
+    }
+    
+    .header-controls {
+        width: 100%;
+        justify-content: center;
+        order: 3;
+    }
+    
+    .header-date-container {
+        order: 2;
+    }
+}
