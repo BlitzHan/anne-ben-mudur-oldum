@@ -39,7 +39,8 @@ let state = {
     unlockedTalents: [],
     history: [],
     nextChainCardId: null,
-    shopOffers: []
+    shopOffers: [],
+    queuedEvents: []
 };
 
 // Achievements Database
@@ -534,6 +535,7 @@ function startNewGame() {
     state.nextChainCardId = null;
     state.history = [];
     state.shopOffers = [];
+    state.queuedEvents = [];
 
     // Apply Quick Start Talent modifier
     if (state.unlockedTalents.includes('quick_start')) {
@@ -621,15 +623,26 @@ function drawNextCard() {
     }
 
     if (!event) {
+        if (state.queuedEvents && state.queuedEvents.length > 0) {
+            state.queuedEvents.forEach(q => q.delayWeeks--);
+            const readyIdx = state.queuedEvents.findIndex(q => q.delayWeeks <= 0);
+            if (readyIdx !== -1) {
+                const readyEventInfo = state.queuedEvents.splice(readyIdx, 1)[0];
+                event = events.find(e => e.id === readyEventInfo.eventId);
+            }
+        }
+    }
+
+    if (!event) {
         if (state.deck.length === 0) {
-            state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.id.includes('_2') && !e.id.includes('_3')));
+            state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.isChainCard && !e.id.includes('_2') && !e.id.includes('_3')));
         }
         event = state.deck.pop();
         
         // Upgrade condition checks
         if (event.id === "ac_broke" && state.purchasedUpgrades.has("heavy_duty_ac")) {
             if (state.deck.length === 0) {
-                state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.id.includes('_2') && !e.id.includes('_3')));
+                state.deck = shuffle(events.filter(e => !e.id.startsWith('campaign_') && !e.isChainCard && !e.id.includes('_2') && !e.id.includes('_3')));
             }
             event = state.deck.pop(); // draw another
         }
@@ -800,6 +813,14 @@ function handleChoice(optionIdx) {
         state.nextChainCardId = option.nextChainCardId;
     } else {
         state.nextChainCardId = null;
+    }
+
+    // Handle queued delayed events
+    if (option.queueEvent) {
+        state.queuedEvents.push({
+            eventId: option.queueEvent.eventId,
+            delayWeeks: option.queueEvent.delayWeeks
+        });
     }
     
     sound.playSwipe();

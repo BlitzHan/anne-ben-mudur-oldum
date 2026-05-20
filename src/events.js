@@ -561,5 +561,310 @@ export const events = [
                 effect: { staff: 15, customer: 20, hq: 15, finance: 5 }
             }
         ]
+    },
+    {
+        id: "semih_depo_yakalanma",
+        title: "Depoda Gizli Aşk",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "💖",
+        desc: "Kıdemli Satış Semih'in, mağaza deposunda AVM'deki başka bir mağazada çalışan Gizem ile mesai saatinde baş başa yakalandığı haberi geldi. Batıkan Bey olayı duyarsa kurumsal disiplin soruşturması açabilir.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
+        options: [
+            {
+                text: "Batıkan Bey duymadan olayın üstünü ört ve Semih'i uyar.",
+                effect: { staff: 10, hq: -10, finance: 0, customer: 0 },
+                queueEvent: { eventId: "semih_depo_followup_a", delayWeeks: 3 }
+            },
+            {
+                text: "Semih'i direkt bölge müdürlüğüne rapor et, kuralları uygula.",
+                effect: { staff: -15, hq: 15, finance: 0, customer: 0 },
+                queueEvent: { eventId: "semih_depo_followup_b", delayWeeks: 3 }
+            },
+            {
+                text: "Semih'i satışta rekor kırmaya teşvik et, Gizem'i de Aura Store'a transfer etmeyi öner.",
+                effect: { staff: 5, customer: 10, hq: 0, finance: -10 },
+                queueEvent: { eventId: "semih_depo_followup_c", delayWeeks: 3 }
+            }
+        ]
+    },
+    {
+        id: "semih_depo_followup_a",
+        title: "Dedikodunun Sonu",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🤫",
+        isChainCard: true,
+        desc: "Semih'in depodaki flörtünü örtbas etmiştiniz ancak AVM yönetimi durumu Batıkan Bey'e resmi yazı ile bildirmiş! Batıkan Bey size güveninin sarsıldığını söylüyor.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Hatamı kabul ediyorum, Semih'i uyaracağım.",
+                effect: { hq: -15, staff: 5 }
+            },
+            {
+                text: "Semih çok iyi ciro getiriyor, onu korumak zorundaydım.",
+                effect: { hq: -10, customer: 5 }
+            }
+        ]
+    },
+    {
+        id: "semih_depo_followup_b",
+        title: "Disiplin Rüzgarı",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "❄️",
+        isChainCard: true,
+        desc: "Semih'i disipline verdikten sonra mağazada soğuk rüzgarlar esiyor. Tekniker Fırat, Semih'e yapılanın haksızlık olduğunu savunuyor ve işi yavaşlatıyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Fırat'ı da uyar, işinizi düzgün yapın.",
+                effect: { staff: -15, hq: 10 }
+            },
+            {
+                text: "Semih ile Fırat'ı yemeğe götürüp arayı düzeltmeye çalış.",
+                effect: { staff: 15, finance: -8 }
+            }
+        ]
+    },
+    {
+        id: "semih_depo_followup_c",
+        title: "Gizem'in Aura Etkisi",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "✨",
+        isChainCard: true,
+        desc: "Depo flörtünden sonra Semih ve transfer ettiğiniz Gizem harika bir satış ikilisi oldu. Sosyal medyada mağazayı paylaşıp gençleri buraya çekiyorlar!",
+        character: { name: "Gizem", title: "Sosyal Medya Sorumlusu", emoji: "📸" },
+        options: [
+            {
+                text: "Bu enerjiyi ödüllendir, prim ver.",
+                effect: { staff: 10, customer: 15, finance: -5 }
+            },
+            {
+                text: "Fazla göze batmasınlar, normal çalışmaya devam.",
+                effect: { customer: 5, staff: -5 }
+            }
+        ]
+    },
+    {
+        id: "firat_gokhan_mining",
+        title: "Gizli Madencilik Ağı",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "🪙",
+        desc: "Tekniker Fırat ve Gökhan'ın, mağaza deposundaki yedek sunucuları kullanarak geceleri gizlice Kripto Para madenciliği yaptığı ortaya çıktı! Elektrik faturası fırladı ancak bir miktar coin kazandılar.",
+        character: { name: "Gökhan", title: "Satış Temsilcisi", emoji: "🙋‍♂️" },
+        options: [
+            {
+                text: "Madenciliği hemen sonlandır ve sunuculara el koy, Batıkan Bey'e bildirme.",
+                effect: { staff: -10, hq: 10, finance: 5 },
+                queueEvent: { eventId: "firat_gokhan_mining_followup_a", delayWeeks: 2 }
+            },
+            {
+                text: "Projeyi destekle ama elde edilen gelirin %50'sini mağaza kasasına aktarmalarını iste.",
+                effect: { staff: 15, hq: -15, finance: 15 },
+                queueEvent: { eventId: "firat_gokhan_mining_followup_b", delayWeeks: 3 }
+            }
+        ]
+    },
+    {
+        id: "firat_gokhan_mining_followup_a",
+        title: "Fırat'ın Özür Yazılımı",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "💾",
+        isChainCard: true,
+        desc: "Madenciliğe son verdiğiniz için Fırat ve Gökhan yaptıkları hatadan ötürü pişman. Fırat, müşterilerin bekleme süresini azaltacak özel bir kasa otomasyon yazılımı geliştirdi ve hediye etmek istiyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Yazılımı sisteme kur ve dene.",
+                effect: { customer: 15, staff: 5 }
+            },
+            {
+                text: "Güvenlik riski yaratır, resmi yazılımlar dışında bir şey kullanma.",
+                effect: { hq: 10, staff: -5 }
+            }
+        ]
+    },
+    {
+        id: "firat_gokhan_mining_followup_b",
+        title: "Sunucu Patlaması",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "💥",
+        isChainCard: true,
+        desc: "Desteklediğiniz kripto madenciliği yüzünden sunucular aşırı ısındı ve AVM'nin o bloktaki trafosunu patlattı! AVM yönetimi mağazaya ağır ceza kesti.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Cezayı sessizce kasadan öde ve sistemi söktür.",
+                effect: { finance: -20, staff: -5 }
+            },
+            {
+                text: "Sorumluluğu Fırat ve Gökhan'a yık, onları işten çıkarmakla tehdit et.",
+                effect: { staff: -25, hq: 15 }
+            }
+        ]
+    },
+    {
+        id: "can_enes_altercation",
+        title: "İnatçı Müşteri Krizi",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "😡",
+        desc: "Mağazadaki yoğun saatte, çalışanlarımız Can ve Enes'in haksız iade talep eden kaba bir müşteriyle sözlü tartışmaya girdiği görüldü. Müşteri bağıra çağıra kameraya çekiyor.",
+        character: { name: "Enes", title: "Satış Danışmanı", emoji: "🧑‍💻" },
+        options: [
+            {
+                text: "Can ve Enes'i destekle, müşteriden mağazayı terk etmesini iste.",
+                effect: { staff: 15, customer: -15, hq: -5 },
+                queueEvent: { eventId: "can_enes_altercation_followup_a", delayWeeks: 2 }
+            },
+            {
+                text: "Müşteriden Can ve Enes adına özür dile ve hemen hediye çeki ver.",
+                effect: { staff: -15, customer: 15, finance: -5 },
+                queueEvent: { eventId: "can_enes_altercation_followup_b", delayWeeks: 2 }
+            }
+        ]
+    },
+    {
+        id: "can_enes_altercation_followup_a",
+        title: "Viral Tartışma",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "📱",
+        isChainCard: true,
+        desc: "Müşterinin Can ve Enes ile tartıştığı video sosyal medyada viral oldu! Ancak halk bizim dik duruşumuzu beğendi ve destek kampanyası başlattı.",
+        character: { name: "Can", title: "Mağaza Müdür Yardımcısı", emoji: "🏃‍♂️" },
+        options: [
+            {
+                text: "Sosyal medyada mağazanın duruşunu öven bir açıklama yap.",
+                effect: { customer: 20, finance: 10 }
+            },
+            {
+                text: "Yorum yapma, konuyu kapat.",
+                effect: { hq: 5 }
+            }
+        ]
+    },
+    {
+        id: "can_enes_altercation_followup_b",
+        title: "Ekip Dayanışması",
+        category: "ZİNCİRLEME GÖREV",
+        emoji: "🤝",
+        isChainCard: true,
+        desc: "Müşteriye boyun eğdiğiniz için kırılan Can ve Enes, iş arkadaşlarıyla bir araya gelip sendikal haklar ve çalışma koşulları hakkında konuşmaya başladı.",
+        character: { name: "Can", title: "Mağaza Müdür Yardımcısı", emoji: "🏃‍♂️" },
+        options: [
+            {
+                text: "Onlarla konuşup bir hafta sonu izin hakkı tanı.",
+                effect: { staff: 20, finance: -5 }
+            },
+            {
+                text: "Disiplinsizliğe izin verme, performans uyarısı yap.",
+                effect: { staff: -20, hq: 10 }
+            }
+        ]
+    },
+    {
+        id: "vip_customer_crisis",
+        title: "VIP Müşteri Kaprisi",
+        category: "MÜŞTERİ DENEYİMİ",
+        emoji: "🕶️",
+        desc: "Ünlü bir sanatçı korumalarıyla Aura Store'a geldi ve mağazanın diğer tüm müşterilere kapatılmasını talep ediyor. Aksi halde alışveriş yapmadan gidecek.",
+        options: [
+            {
+                text: "Mağazayı boşalt, VIP deneyime öncelik ver.",
+                effect: { customer: -15, finance: 20, hq: 5 }
+            },
+            {
+                text: "Herkes eşit hizmet alır, kibarca sırasını beklemesini söyle.",
+                effect: { customer: 15, finance: -10, staff: 10 }
+            }
+        ]
+    },
+    {
+        id: "mall_blackout",
+        title: "AVM Elektrik Kesintisi",
+        category: "ANİ OLAY",
+        emoji: "🔌",
+        desc: "AVM'nin ana jeneratöründe arıza çıktı, Aura Store karanlıkta kaldı. Yedek güç sadece kasaları çalıştırıyor, klimalar ve ışıklar kapalı.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Mağazayı açık tut, telefon ışıklarıyla satışa devam!",
+                effect: { staff: -12, customer: -15, finance: 12 }
+            },
+            {
+                text: "Güvenlik riski nedeniyle kapıları kapat ve elektrik gelene kadar bekle.",
+                effect: { staff: 10, customer: 5, finance: -15, hq: -5 }
+            }
+        ]
+    },
+    {
+        id: "gizem_brand_deal",
+        title: "Gizem'in Sponsorluk Teklifi",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "🤳",
+        desc: "Gizem, rakip bir teknoloji markasının reklam yüzü olmak için teklif aldığını söyledi. Eğer giderse bizim mağazanın genç kitlesini de yanında götürebilir.",
+        character: { name: "Gizem", title: "Sosyal Medya Sorumlusu", emoji: "📸" },
+        options: [
+            {
+                text: "Daha yüksek bir mağaza primi teklif ederek kalmasını sağla.",
+                effect: { staff: 15, finance: -15, customer: 5 }
+            },
+            {
+                text: "Kararına saygı duy, yolu açık olsun.",
+                effect: { staff: -10, customer: -15, hq: 5 }
+            }
+        ]
+    },
+    {
+        id: "competitor_spy",
+        title: "Rakip Mağaza Ajanı",
+        category: "GÜNLÜK OPERASYON",
+        emoji: "🕵️‍♂️",
+        desc: "Karşı koridordaki rakip telefon mağazasının çalışanlarından birinin, bizim teşhir ürünlerinin ve fiyat etiketlerinin fotoğraflarını çektiği görüldü.",
+        character: { name: "Gökhan", title: "Satış Temsilcisi", emoji: "🙋‍♂️" },
+        options: [
+            {
+                text: "Güvenliği çağırıp mağazadan attır, sert tepki göster.",
+                effect: { staff: 5, hq: -10, customer: 5 }
+            },
+            {
+                text: "Görmezden gel, hatta yanına gidip en yeni AuraBook broşürünü hediye et.",
+                effect: { customer: 15, hq: 10, staff: -5 }
+            }
+        ]
+    },
+    {
+        id: "staff_audit_bonus",
+        title: "Genel Merkez Gizli Müşterisi",
+        category: "BÖLGE İLİŞKİLERİ",
+        emoji: "🕵️",
+        desc: "Genel Merkez'in mağazamıza gizli bir denetmen gönderdiği dedikodusu yayıldı. Personel çok gergin, kimin denetmen olduğunu çözmeye çalışıyor.",
+        character: { name: "Enes", title: "Satış Danışmanı", emoji: "🧑‍💻" },
+        options: [
+            {
+                text: "Tüm müşterilere aşırı kibar davranılması talimatını ver.",
+                effect: { staff: -10, customer: 15, hq: 10 }
+            },
+            {
+                text: "Rahat olun, her zamanki Aura kalitesinde hizmet verin.",
+                effect: { staff: 15, customer: 5, hq: 0 }
+            }
+        ]
+    },
+    {
+        id: "eco_friendly_initiative",
+        title: "Yeşil Mağaza Hareketi",
+        category: "GÜNLÜK OPERASYON",
+        emoji: "♻️",
+        desc: "Tekniker Fırat, mağazada artık eskiyen pilleri ve elektronik atıkları toplayıp geri dönüşüme kazandıracağımız bir yeşil köşe kurmayı öneriyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Bütçe ayır ve köşeyi hemen kur.",
+                effect: { hq: 15, customer: 10, finance: -8, staff: 5 }
+            },
+            {
+                text: "Şu an ciroya odaklanmalıyız, gereksiz masraf yapmayalım.",
+                effect: { hq: -10, finance: 5 }
+            }
+        ]
     }
 ];
