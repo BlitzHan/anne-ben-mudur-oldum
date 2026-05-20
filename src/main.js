@@ -213,6 +213,26 @@ function bindActionButtons() {
         sound.playClick();
         startNewGame();
     });
+
+    // Home button in header to exit to main menu
+    document.getElementById('home-btn').addEventListener('click', () => {
+        sound.playClick();
+        if (confirm("Oyunu sonlandırıp ana menüye dönmek istediğinize emin misiniz? İlerlemeniz silinecektir.")) {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const menuMain = document.getElementById('menu-main');
+            const menuSetup = document.getElementById('menu-setup');
+            const menuRules = document.getElementById('menu-rules');
+            const menuLeaderboard = document.getElementById('menu-leaderboard-panel');
+            
+            welcomeScreen.classList.remove('hidden');
+            menuMain.classList.remove('hidden');
+            menuSetup.classList.add('hidden');
+            menuRules.classList.add('hidden');
+            menuLeaderboard.classList.add('hidden');
+            
+            state.isGameOver = true;
+        }
+    });
 }
 
 const STORE_LABELS = {
