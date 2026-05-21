@@ -427,7 +427,7 @@ function resetTalents() {
 
 // Setup High Score from Local Storage
 function loadHighScore() {
-    const savedScore = localStorage.getItem('high_score_weeks');
+    const savedScore = localStorage.getItem('high_score_points') || localStorage.getItem('high_score_weeks');
     state.highScore = savedScore ? parseInt(savedScore, 10) : 0;
     updateHighScoreUI();
 }
@@ -435,7 +435,7 @@ function loadHighScore() {
 function updateHighScoreUI() {
     const scoreElement = document.getElementById('high-score');
     if (scoreElement) {
-        scoreElement.textContent = `${state.highScore} Hafta`;
+        scoreElement.textContent = `${state.highScore.toLocaleString('tr-TR')} Puan`;
     }
 }
 
@@ -1432,11 +1432,42 @@ function getSurvivalScore() {
     return (state.date.year - 1) * 48 + (state.date.month - 1) * 4 + state.date.week - 1;
 }
 
+// Calculate dynamic, performance-based career points score
+function calculateCompositeScore() {
+    const weeksSurvived = getSurvivalScore();
+    
+    // 1. Base tenure score (100 points per week managed)
+    const baseSurvivalScore = weeksSurvived * 100;
+    
+    // 2. Average metrics performance bonus (reflecting store health over time)
+    let avgStats = 50;
+    if (state.history && state.history.length > 0) {
+        let totalSum = 0;
+        state.history.forEach(h => {
+            totalSum += (h.staff + h.customer + h.hq + h.finance);
+        });
+        avgStats = totalSum / (state.history.length * 4);
+    }
+    const performanceBonus = Math.round(avgStats * 50);
+    
+    // 3. Final cash bonus (10 points per percent budget left)
+    const financeBonus = state.stats.finance * 10;
+    
+    // 4. Shop upgrades bonus (500 points per purchased upgrade)
+    const upgradesBonus = state.purchasedUpgrades.size * 500;
+    
+    // 5. Talent tree progress bonus (300 points per unlocked talent)
+    const talentsBonus = (state.unlockedTalents || []).length * 300;
+    
+    return baseSurvivalScore + performanceBonus + financeBonus + upgradesBonus + talentsBonus;
+}
+
 function triggerGameOver(failedStat) {
     state.isGameOver = true;
     sound.playGameOver();
 
     const weeksSurvived = getSurvivalScore();
+    const finalScore = calculateCompositeScore();
 
     // Firing Message
     document.getElementById('gameover-reason').textContent = GAMEOVER_REASONS[failedStat];
@@ -1451,19 +1482,28 @@ function triggerGameOver(failedStat) {
         document.getElementById('gameover-reason').innerHTML += `<br><span style="color:#c084fc; font-weight:bold; font-size:0.9rem; display:inline-block; margin-top:8px;">✨ Bu oyunda hayatta kalarak +${earnedPoints} Yetenek Puanı kazandınız!</span>`;
     }
     
-    // Current tenure details
+    // Current tenure & score details
     document.getElementById('gameover-tenure').textContent = `${weeksSurvived} Hafta`;
     document.getElementById('gameover-months').textContent = `${(state.date.year - 1) * 12 + state.date.month - 1} Ay`;
 
+    const earnedScoreElement = document.getElementById('gameover-earned-score');
+    if (earnedScoreElement) {
+        earnedScoreElement.textContent = `${finalScore.toLocaleString('tr-TR')} Puan`;
+    }
+
     // Save & Calculate Leaderboard High Scores
-    if (weeksSurvived > state.highScore) {
-        state.highScore = weeksSurvived;
-        localStorage.setItem('high_score_weeks', weeksSurvived.toString());
+    if (finalScore > state.highScore) {
+        state.highScore = finalScore;
+        localStorage.setItem('high_score_points', finalScore.toString());
         updateHighScoreUI();
     }
-    document.getElementById('gameover-best').textContent = `${state.highScore} Hafta`;
+    
+    const bestScoreElement = document.getElementById('gameover-best');
+    if (bestScoreElement) {
+        bestScoreElement.textContent = `${state.highScore.toLocaleString('tr-TR')} Puan`;
+    }
 
-    saveLeaderboard(weeksSurvived);
+    saveLeaderboard(finalScore);
     renderLeaderboard();
 
     // Render SVG progression chart
@@ -1608,7 +1648,7 @@ function renderScoreList(listElement, scores) {
             <div class="leaderboard-item-main">
                 <span class="leaderboard-rank">#${index + 1}</span>
                 <span class="leaderboard-name">${name}</span>
-                <span class="leaderboard-score">${score} Hafta</span>
+                <span class="leaderboard-score">${Number(score).toLocaleString('tr-TR')} Puan</span>
             </div>
             <div class="leaderboard-item-sub">
                 <span>${storeLabel} (${diffLabel})</span>
@@ -1710,6 +1750,7 @@ function triggerRetirement(isMandatory) {
     sound.playSuccess();
 
     const weeksSurvived = getSurvivalScore();
+    const finalScore = calculateCompositeScore();
     const age = 20 + (state.date.year - 1);
 
     // Update retirement reason message
@@ -1731,20 +1772,25 @@ function triggerRetirement(isMandatory) {
     if (ageElement) {
         ageElement.textContent = `${age} Yaş`;
     }
+    
+    const earnedScoreElement = document.getElementById('retirement-earned-score');
+    if (earnedScoreElement) {
+        earnedScoreElement.textContent = `${finalScore.toLocaleString('tr-TR')} Puan`;
+    }
 
     // Save & Calculate Leaderboard High Scores
-    if (weeksSurvived > state.highScore) {
-        state.highScore = weeksSurvived;
-        localStorage.setItem('high_score_weeks', weeksSurvived.toString());
+    if (finalScore > state.highScore) {
+        state.highScore = finalScore;
+        localStorage.setItem('high_score_points', finalScore.toString());
         updateHighScoreUI();
     }
     
     const bestElement = document.getElementById('retirement-best');
     if (bestElement) {
-        bestElement.textContent = `${state.highScore} Hafta`;
+        bestElement.textContent = `${state.highScore.toLocaleString('tr-TR')} Puan`;
     }
 
-    saveLeaderboard(weeksSurvived);
+    saveLeaderboard(finalScore);
     renderLeaderboard();
 
     // Render SVG progression chart in the retirement container
