@@ -38,6 +38,10 @@
                         <span class="date-label">Tarih</span>
                         <span id="game-date" class="date-value">Yıl 1, Ay 1, Hafta 1</span>
                     </div>
+                    <div class="age-badge">
+                        <span class="age-label">Müdür Yaşı</span>
+                        <span id="game-age" class="age-value">20 Yaş</span>
+                    </div>
                     <div class="score-badge">
                         <span class="score-label">En İyi Skor</span>
                         <span id="high-score" class="score-value">0 Hafta</span>
@@ -470,6 +474,84 @@
                         <span>Yeni Aya Başla</span> <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Voluntary Retirement Choice Modal -->
+        <div id="retirement-choice-modal" class="modal-overlay hidden">
+            <div class="modal-content glass-panel animated-modal text-center" style="max-width: 500px;">
+                <div class="modal-header" style="justify-content: center; flex-direction: column; align-items: center; gap: 8px;">
+                    <span style="font-size: 3rem;">🏖️</span>
+                    <h2 style="margin: 0; color: #f59e0b; font-family: var(--font-heading);">Emeklilik Zamanı Geldi!</h2>
+                </div>
+                <div class="modal-body" style="padding: 20px 0;">
+                    <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
+                        Tebrikler! 45 yıldır bu mağazayı başarıyla yönettiniz ve <strong>65 yaşına</strong> ulaştınız. Bölge yönetimi size şerefli bir emeklilik ve ömür boyu huzur teklif ediyor.
+                    </p>
+                    <p style="font-size: 0.9rem; line-height: 1.6; color: #a855f7; font-weight: bold;">
+                        Şimdi emekli olup başarılarınızı taçlandırabilir veya mağaza aşkıyla 100 yaşına kadar çalışmaya devam edebilirsiniz!
+                    </p>
+                </div>
+                <div class="modal-footer" style="display: flex; gap: 12px; justify-content: center; width: 100%;">
+                    <button id="retire-accept-btn" class="action-btn gold-btn" style="flex: 1;">
+                        <i class="fas fa-umbrella-beach"></i> Emekli Ol
+                    </button>
+                    <button id="retire-decline-btn" class="action-btn outline-btn" style="flex: 1;">
+                        <i class="fas fa-briefcase"></i> Çalışmaya Devam Et
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retirement Screen Overlay (Victory) -->
+        <div id="retirement-screen" class="modal-overlay hidden">
+            <div class="gameover-content glass-panel text-center retirement-theme">
+                <div class="gameover-icon">
+                    <i class="fas fa-award" style="color:#f59e0b; font-size:3.5rem; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));"></i>
+                </div>
+                <h1 class="retirement-title">Tebrikler, Emekli Oldunuz!</h1>
+                <p id="retirement-reason" class="retirement-reason">Mağazayı başarıyla yöneterek onurlu bir emekliliğe hak kazandınız.</p>
+                
+                <div class="gameover-stats-grid">
+                    <div class="gameover-stat-box">
+                        <span class="label">Toplam Süre</span>
+                        <span id="retirement-tenure" class="value">0 Hafta</span>
+                    </div>
+                    <div class="gameover-stat-box">
+                        <span class="label">Müdür Yaşı</span>
+                        <span id="retirement-age" class="value">65 Yaş</span>
+                    </div>
+                    <div class="gameover-stat-box">
+                        <span class="label">En İyi Süre</span>
+                        <span id="retirement-best" class="value">0 Hafta</span>
+                    </div>
+                </div>
+
+                <!-- Retirement Progression Chart -->
+                <div class="gameover-chart-section">
+                    <h3>📈 Kariyer Boyu Mağaza Durumu</h3>
+                    <div id="retirement-chart-container" class="gameover-chart-container" style="margin: 15px auto; max-width: 500px; height: 180px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; position: relative;">
+                        <!-- Dynamic SVG will be rendered here -->
+                    </div>
+                    <div class="chart-legend" style="display: flex; justify-content: center; gap: 16px; margin-top: 8px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">
+                        <span style="color: var(--color-staff);"><i class="fas fa-circle"></i> Personel</span>
+                        <span style="color: var(--color-customer);"><i class="fas fa-circle"></i> Müşteri</span>
+                        <span style="color: var(--color-hq);"><i class="fas fa-circle"></i> Genel Merkez</span>
+                        <span style="color: var(--color-finance);"><i class="fas fa-circle"></i> Finans</span>
+                    </div>
+                </div>
+
+                <!-- High Score Leaderboard -->
+                <div class="leaderboard-section">
+                    <h3>🏆 En İyi Skorlar (Liderlik Tablosu)</h3>
+                    <ol class="leaderboard-list" id="retirement-leaderboard-list">
+                        <!-- Dynamic scores -->
+                    </ol>
+                </div>
+
+                <button id="retirement-play-again-btn" class="action-btn primary-btn gold-btn">
+                    <i class="fas fa-play"></i> Yeni Kariyer Başlat
+                </button>
             </div>
         </div>
 

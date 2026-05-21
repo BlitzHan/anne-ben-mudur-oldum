@@ -27,6 +27,8 @@ let state = {
     },
     purchasedUpgrades: new Set(),
     activeGoal: null,
+    activeGoals: [],
+    retirementOffered: false,
     deck: [],
     currentEvent: null,
     isGameOver: false,
@@ -475,6 +477,22 @@ function bindActionButtons() {
         closeMonthlyModal();
     });
 
+    // Retirement Choice Accept Button
+    document.getElementById('retire-accept-btn').addEventListener('click', () => {
+        handleRetirementChoice(true);
+    });
+
+    // Retirement Choice Decline Button
+    document.getElementById('retire-decline-btn').addEventListener('click', () => {
+        handleRetirementChoice(false);
+    });
+
+    // Retirement Screen Play Again Button
+    document.getElementById('retirement-play-again-btn').addEventListener('click', () => {
+        sound.playClick();
+        startNewGame();
+    });
+
     // Play again button in game over screen
     document.getElementById('play-again-btn').addEventListener('click', () => {
         sound.playClick();
@@ -536,6 +554,8 @@ function startNewGame() {
     state.history = [];
     state.shopOffers = [];
     state.queuedEvents = [];
+    state.activeGoals = [];
+    state.retirementOffered = false;
 
     // Apply Quick Start Talent modifier
     if (state.unlockedTalents.includes('quick_start')) {
@@ -562,6 +582,8 @@ function startNewGame() {
     // Hide game over screen & modals
     document.getElementById('gameover-screen').classList.add('hidden');
     document.getElementById('monthly-modal').classList.add('hidden');
+    document.getElementById('retirement-choice-modal').classList.add('hidden');
+    document.getElementById('retirement-screen').classList.add('hidden');
     
     // Reset active upgrades visual list
     document.getElementById('upgrades-widget').classList.add('hidden');
@@ -1054,46 +1076,114 @@ function updateDateUI() {
     if (dateElement) {
         dateElement.textContent = `Yıl ${state.date.year}, Ay ${state.date.month}, Hafta ${state.date.week}`;
     }
+    const ageElement = document.getElementById('game-age');
+    if (ageElement) {
+        const age = 20 + (state.date.year - 1);
+        ageElement.textContent = `${age} Yaş`;
+    }
 }
 
 // ==========================================================================
 // MONTHLY REVIEW & UPGRADES SHOP
 // ==========================================================================
 function assignNewGoal() {
-    // Pick random target from pool
-    const randomGoal = GOALS_POOL[Math.floor(Math.random() * GOALS_POOL.length)];
-    state.activeGoal = { ...randomGoal };
-    
-    // Apply Aura Vizyonu Talent Modifier (-5% to the required minVal)
-    if (state.unlockedTalents && state.unlockedTalents.includes('aura_vision')) {
-        state.activeGoal.minVal = Math.max(20, state.activeGoal.minVal - 5);
-        if (state.activeGoal.type === 'customer') {
-            state.activeGoal.desc = `Müşteri deneyimini %${state.activeGoal.minVal}'in üzerinde tut.`;
-        } else if (state.activeGoal.type === 'staff') {
-            state.activeGoal.desc = `Personel moralini en az %${state.activeGoal.minVal} seviyesinde tut.`;
-        } else if (state.activeGoal.type === 'finance') {
-            state.activeGoal.desc = `Kasa bütçesini %${state.activeGoal.minVal} veya daha yukarısında bitir.`;
-        } else if (state.activeGoal.type === 'hq') {
-            state.activeGoal.desc = `Bölge mutluluğunu %${state.activeGoal.minVal} üzerinde tut.`;
+    // Determine number of goals to assign
+    let numGoals = 1;
+    if (state.date.year === 1) {
+        if (state.date.month > 6) {
+            numGoals = 2;
+        } else {
+            numGoals = 1;
         }
+    } else if (state.date.year === 2) {
+        numGoals = 2;
+    } else {
+        numGoals = 3;
     }
-    
+
+    // Determine target values based on progression
+    let primaryVal = 55;
+    if (state.date.year === 1) {
+        primaryVal = state.date.month > 6 ? 60 : 55;
+    } else if (state.date.year === 2) {
+        primaryVal = 65;
+    } else {
+        primaryVal = 70;
+    }
+
+    let secondaryVal = 40;
+    if (state.date.year === 2) {
+        secondaryVal = 45;
+    } else if (state.date.year >= 3) {
+        secondaryVal = 50;
+    }
+
+    let tertiaryVal = 45;
+
+    const targetVals = [primaryVal, secondaryVal, tertiaryVal];
+
+    // Pick unique stat types
+    const types = ['customer', 'staff', 'finance', 'hq'];
+    // Simple shuffle
+    for (let i = types.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [types[i], types[j]] = [types[j], types[i]];
+    }
+
+    state.activeGoals = [];
+    for (let i = 0; i < numGoals; i++) {
+        const type = types[i];
+        let minVal = targetVals[i];
+
+        // Apply Aura Vizyonu Talent Modifier (-5% to the required minVal)
+        if (state.unlockedTalents && state.unlockedTalents.includes('aura_vision')) {
+            minVal = Math.max(20, minVal - 5);
+        }
+
+        let descText = '';
+        if (type === 'customer') {
+            descText = `Müşteri deneyimini %${minVal}'in üzerinde tut.`;
+        } else if (type === 'staff') {
+            descText = `Personel moralini en az %${minVal} seviyesinde tut.`;
+        } else if (type === 'finance') {
+            descText = `Kasa bütçesini %${minVal} veya daha yukarısında bitir.`;
+        } else if (type === 'hq') {
+            descText = `Bölge mutluluğunu %${minVal} üzerinde tut.`;
+        }
+
+        state.activeGoals.push({
+            type,
+            minVal,
+            desc: descText
+        });
+    }
+
+    // Set first goal to state.activeGoal for backward compatibility
+    state.activeGoal = state.activeGoals[0];
+
     // Display target banner
     const banner = document.getElementById('target-alert-banner');
     const desc = document.getElementById('target-description');
     
     if (banner && desc) {
-        desc.textContent = state.activeGoal.desc;
+        desc.innerHTML = state.activeGoals.map(g => `• ${g.desc}`).join('<br>');
         banner.classList.remove('hidden');
     }
 }
 
 function triggerMonthlyReview() {
-    // 1. Evaluate target goal
-    const targetStat = state.activeGoal.type;
-    const minVal = state.activeGoal.minVal;
-    const currentVal = state.stats[targetStat];
-    const isGoalMet = currentVal >= minVal;
+    // 1. Evaluate all active goals
+    let allGoalsMet = true;
+    const goalStatusList = state.activeGoals.map(goal => {
+        const targetStat = goal.type;
+        const minVal = goal.minVal;
+        const currentVal = state.stats[targetStat];
+        const isMet = currentVal >= minVal;
+        if (!isMet) {
+            allGoalsMet = false;
+        }
+        return { ...goal, isMet, currentVal };
+    });
 
     const modalTitle = document.getElementById('modal-month-name');
     modalTitle.textContent = `${state.date.year}. Yıl, ${state.date.month}. Ay Sonu Raporu`;
@@ -1103,11 +1193,28 @@ function triggerMonthlyReview() {
     const goalDesc = document.getElementById('goal-status-desc');
     const goalReward = document.getElementById('goal-reward-val');
 
+    // Build dynamically rendered goals status HTML list
+    const goalsHTML = `
+        <div class="goals-list">
+            ${goalStatusList.map(g => {
+                return `
+                <div class="goal-item-status ${g.isMet ? 'met' : 'unmet'}">
+                    <span>
+                        <i class="fas ${g.isMet ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${g.desc} <strong>(Mevcut: %${g.currentVal})</strong>
+                    </span>
+                    <span class="badge">${g.isMet ? 'Başarılı' : 'Başarısız'}</span>
+                </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+
     // Reward / Punishment applying
-    if (isGoalMet) {
+    if (allGoalsMet) {
         goalBox.className = "goal-status-box success";
-        goalTitle.innerHTML = `<i class="fas fa-check-circle"></i> Hedef Başarıyla Yakalandı!`;
-        goalDesc.textContent = `Bu ayki '${state.activeGoal.desc}' hedefini tamamladınız. Bölge yönetimi başarınızı takdir etti.`;
+        goalTitle.innerHTML = `<i class="fas fa-check-circle"></i> Tüm Hedefler Başarıyla Yakalandı!`;
+        goalDesc.innerHTML = `Bu ayki tüm hedeflerinizi tamamladınız. Bölge yönetimi başarınızı takdir etti ve ek bütçe sağladı.<br>${goalsHTML}`;
         
         // Reward: +15% HQ, +5% Finance
         state.stats.hq = Math.min(100, state.stats.hq + 15);
@@ -1116,8 +1223,8 @@ function triggerMonthlyReview() {
         sound.playSuccess();
     } else {
         goalBox.className = "goal-status-box failed";
-        goalTitle.innerHTML = `<i class="fas fa-times-circle"></i> Hedef Başarısız!`;
-        goalDesc.textContent = `Bu ayki '${state.activeGoal.desc}' hedefini tutturamadınız. Bölge yönetimi uyarısı aldınız.`;
+        goalTitle.innerHTML = `<i class="fas fa-times-circle"></i> Bazı Hedefler Başarısız!`;
+        goalDesc.innerHTML = `Bu ayki hedefleri tam olarak tutturamadınız. Bölge yönetiminden uyarı aldınız.<br>${goalsHTML}`;
         
         // Punishment: -15% HQ, -5% Customer
         state.stats.hq = Math.max(0, state.stats.hq - 15);
@@ -1280,6 +1387,18 @@ function closeMonthlyModal() {
         state.date.year += 1;
     }
 
+    const age = 20 + (state.date.year - 1);
+
+    if (age >= 100) {
+        triggerRetirement(true);
+        return;
+    }
+
+    if (age >= 65 && !state.retirementOffered) {
+        showRetirementOptionModal();
+        return;
+    }
+
     // Set new monthly goal
     assignNewGoal();
     
@@ -1377,10 +1496,15 @@ function saveLeaderboard(score) {
 
 // Render high score leaderboard list
 function renderLeaderboard() {
-    const listElement = document.getElementById('leaderboard-list');
-    if (!listElement) return;
+    const mainList = document.getElementById('leaderboard-list');
+    const retirementList = document.getElementById('retirement-leaderboard-list');
 
-    listElement.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+    if (mainList) {
+        mainList.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+    }
+    if (retirementList) {
+        retirementList.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+    }
 
     fetchGlobalLeaderboard().then(scores => {
         if (!scores || scores.length === 0) {
@@ -1388,11 +1512,14 @@ function renderLeaderboard() {
         }
         
         if (scores.length === 0) {
-            listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            const noScoreHtml = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            if (mainList) mainList.innerHTML = noScoreHtml;
+            if (retirementList) retirementList.innerHTML = noScoreHtml;
             return;
         }
 
-        renderScoreList(listElement, scores);
+        if (mainList) renderScoreList(mainList, scores);
+        if (retirementList) renderScoreList(retirementList, scores);
     });
 }
 
@@ -1492,8 +1619,8 @@ function renderScoreList(listElement, scores) {
     });
 }
 
-function renderProgressionChart() {
-    const container = document.getElementById('gameover-chart-container');
+function renderProgressionChart(containerId = 'gameover-chart-container') {
+    const container = document.getElementById(containerId);
     if (!container) return;
 
     const data = state.history;
@@ -1555,4 +1682,74 @@ function renderProgressionChart() {
     `;
 
     container.innerHTML = svgHtml;
+}
+
+// ==========================================================================
+// RETIREMENT SYSTEM
+// ==========================================================================
+function showRetirementOptionModal() {
+    document.getElementById('retirement-choice-modal').classList.remove('hidden');
+}
+
+function handleRetirementChoice(retire) {
+    sound.playClick();
+    document.getElementById('retirement-choice-modal').classList.add('hidden');
+    if (retire) {
+        triggerRetirement(false);
+    } else {
+        state.retirementOffered = true;
+        // Resume the normal month transition that was paused:
+        assignNewGoal();
+        updateDateUI();
+        drawNextCard();
+    }
+}
+
+function triggerRetirement(isMandatory) {
+    state.isGameOver = true;
+    sound.playSuccess();
+
+    const weeksSurvived = getSurvivalScore();
+    const age = 20 + (state.date.year - 1);
+
+    // Update retirement reason message
+    const reasonElement = document.getElementById('retirement-reason');
+    if (reasonElement) {
+        if (isMandatory) {
+            reasonElement.textContent = "100 yaşına ulaştınız! Genel merkez artık zorunlu olarak emekli olmanız gerektiğine karar verdi. Efsanevi kariyeriniz boyunca sergilediğiniz üstün başarılar için teşekkür ederiz!";
+        } else {
+            reasonElement.textContent = "Mağazayı başarıyla yöneterek 65 yaşında kendi isteğinizle onurlu bir emekliliğe ayrıldınız. Keyifli emeklilik günleri dileriz!";
+        }
+    }
+
+    // Update retirement tenure and age
+    const tenureElement = document.getElementById('retirement-tenure');
+    if (tenureElement) {
+        tenureElement.textContent = `${weeksSurvived} Hafta`;
+    }
+    const ageElement = document.getElementById('retirement-age');
+    if (ageElement) {
+        ageElement.textContent = `${age} Yaş`;
+    }
+
+    // Save & Calculate Leaderboard High Scores
+    if (weeksSurvived > state.highScore) {
+        state.highScore = weeksSurvived;
+        localStorage.setItem('high_score_weeks', weeksSurvived.toString());
+        updateHighScoreUI();
+    }
+    
+    const bestElement = document.getElementById('retirement-best');
+    if (bestElement) {
+        bestElement.textContent = `${state.highScore} Hafta`;
+    }
+
+    saveLeaderboard(weeksSurvived);
+    renderLeaderboard();
+
+    // Render SVG progression chart in the retirement container
+    renderProgressionChart('retirement-chart-container');
+
+    // Show Retirement Screen Overlay
+    document.getElementById('retirement-screen').classList.remove('hidden');
 }
