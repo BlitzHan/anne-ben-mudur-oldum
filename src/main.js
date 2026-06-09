@@ -759,21 +759,38 @@ function displayCard(event) {
         // Build choice structure
         const labelText = `SEÇENEK ${String.fromCharCode(65 + idx)}`;
         
+        // Effects are intentionally obscured: exact values are never shown so the
+        // player must judge the decision from the story text, like in real life.
+        // Easy: direction arrows. Normal: only affected stats. Hard: no hints.
         let effectsHtml = '';
-        Object.keys(option.effect).forEach(stat => {
-            const rawVal = option.effect[stat];
-            const val = getModifiedEffect(stat, rawVal, event.id);
+        if (state.difficulty === 'hard') {
+            effectsHtml = `
+                <span class="effect-badge effect-hidden">
+                    <i class="fas fa-question"></i> Sonuçlar belirsiz
+                </span>
+            `;
+        } else {
+            Object.keys(option.effect).forEach(stat => {
+                const rawVal = option.effect[stat];
+                if (rawVal === 0) return;
 
-            if (val !== 0) {
-                const isPos = val > 0;
-                effectsHtml += `
-                    <span class="effect-badge ${isPos ? 'effect-pos' : 'effect-neg'}">
-                        <i class="fas ${isPos ? 'fa-caret-up' : 'fa-caret-down'}"></i>
-                        ${isPos ? '+' : ''}${val}% ${statLabels[stat]}
-                    </span>
-                `;
-            }
-        });
+                if (state.difficulty === 'easy') {
+                    const isPos = rawVal > 0;
+                    effectsHtml += `
+                        <span class="effect-badge ${isPos ? 'effect-pos' : 'effect-neg'}">
+                            <i class="fas ${isPos ? 'fa-caret-up' : 'fa-caret-down'}"></i>
+                            ${statLabels[stat]}
+                        </span>
+                    `;
+                } else {
+                    effectsHtml += `
+                        <span class="effect-badge effect-neutral">
+                            <i class="fas fa-circle-question"></i> ${statLabels[stat]}
+                        </span>
+                    `;
+                }
+            });
+        }
 
         btn.innerHTML = `
             <span class="option-label">${labelText}</span>
@@ -959,8 +976,15 @@ function applyStatsModification(effects) {
 
     Object.keys(effects).forEach(stat => {
         const val = effects[stat];
-        const modifier = getModifiedEffect(stat, val, eventId);
-        
+        let modifier = getModifiedEffect(stat, val, eventId);
+
+        // Apply ±25% variance: outcomes can't be memorized or min-maxed exactly
+        if (modifier !== 0) {
+            const variance = 0.75 + Math.random() * 0.5;
+            const sign = Math.sign(modifier);
+            modifier = sign * Math.max(1, Math.round(Math.abs(modifier) * variance));
+        }
+
         state.stats[stat] += modifier;
         // Cap stats at [0, 100]
         state.stats[stat] = Math.max(0, Math.min(100, state.stats[stat]));
@@ -1022,8 +1046,27 @@ function updateStatsUI() {
     }
 }
 
+// Weekly fixed operating costs: rent, salaries, utilities. Keeps the budget
+// under constant pressure so the game can't be coasted indefinitely.
+function applyWeeklyOperatingCosts() {
+    const baseCost = 1 + Math.min(2, Math.floor((state.date.year - 1) / 2));
+    state.stats.finance = Math.max(0, state.stats.finance - baseCost);
+
+    // Weekly wear & tear: small chance of staff fatigue or customer churn
+    if (Math.random() < 0.4) {
+        const target = Math.random() < 0.5 ? 'staff' : 'customer';
+        state.stats[target] = Math.max(0, state.stats[target] - 1);
+    }
+
+    updateStatsUI();
+}
+
 // Advance calendar date
 function progressTime() {
+    // Apply weekly fixed costs before anything else
+    applyWeeklyOperatingCosts();
+    if (checkGameOverConditions()) return;
+
     // Campaign decrement progression
     if (state.activeCampaign && state.campaignWeeksLeft > 0) {
         state.campaignWeeksLeft -= 1;
@@ -1087,38 +1130,20 @@ function updateDateUI() {
 // MONTHLY REVIEW & UPGRADES SHOP
 // ==========================================================================
 function assignNewGoal() {
-    // Determine number of goals to assign
+    // Difficulty ramps smoothly with total months in charge, not just years —
+    // HQ raises the bar a little every couple of months
+    const totalMonths = (state.date.year - 1) * 12 + state.date.month;
+
     let numGoals = 1;
-    if (state.date.year === 1) {
-        if (state.date.month > 6) {
-            numGoals = 2;
-        } else {
-            numGoals = 1;
-        }
-    } else if (state.date.year === 2) {
-        numGoals = 2;
-    } else {
+    if (totalMonths > 18) {
         numGoals = 3;
+    } else if (totalMonths > 6) {
+        numGoals = 2;
     }
 
-    // Determine target values based on progression
-    let primaryVal = 55;
-    if (state.date.year === 1) {
-        primaryVal = state.date.month > 6 ? 60 : 55;
-    } else if (state.date.year === 2) {
-        primaryVal = 65;
-    } else {
-        primaryVal = 70;
-    }
-
-    let secondaryVal = 40;
-    if (state.date.year === 2) {
-        secondaryVal = 45;
-    } else if (state.date.year >= 3) {
-        secondaryVal = 50;
-    }
-
-    let tertiaryVal = 45;
+    const primaryVal = Math.min(80, 55 + Math.floor(totalMonths / 2));
+    const secondaryVal = Math.min(65, 40 + Math.floor(totalMonths / 4));
+    const tertiaryVal = Math.min(60, 45 + Math.floor(totalMonths / 6));
 
     const targetVals = [primaryVal, secondaryVal, tertiaryVal];
 
@@ -1216,10 +1241,10 @@ function triggerMonthlyReview() {
         goalTitle.innerHTML = `<i class="fas fa-check-circle"></i> Tüm Hedefler Başarıyla Yakalandı!`;
         goalDesc.innerHTML = `Bu ayki tüm hedeflerinizi tamamladınız. Bölge yönetimi başarınızı takdir etti ve ek bütçe sağladı.<br>${goalsHTML}`;
         
-        // Reward: +15% HQ, +5% Finance
-        state.stats.hq = Math.min(100, state.stats.hq + 15);
-        state.stats.finance = Math.min(100, state.stats.finance + 5);
-        goalReward.textContent = "+15% Bölge / +5% Kasa";
+        // Reward: +8% HQ, +4% Finance
+        state.stats.hq = Math.min(100, state.stats.hq + 8);
+        state.stats.finance = Math.min(100, state.stats.finance + 4);
+        goalReward.textContent = "+8% Bölge / +4% Kasa";
         sound.playSuccess();
     } else {
         goalBox.className = "goal-status-box failed";
@@ -1233,14 +1258,25 @@ function triggerMonthlyReview() {
         sound.playWarning();
     }
 
-    // Apply active monthly upgrade bonuses
+    // Apply active monthly upgrade bonuses and collect upkeep costs
+    let totalUpkeep = 0;
     shopUpgrades.forEach(upg => {
-        if (state.purchasedUpgrades.has(upg.id) && upg.monthlyBonus) {
+        if (!state.purchasedUpgrades.has(upg.id)) return;
+
+        if (upg.monthlyBonus) {
             Object.keys(upg.monthlyBonus).forEach(stat => {
-                state.stats[stat] = Math.min(100, state.stats[stat] + upg.monthlyBonus[stat]);
+                state.stats[stat] = Math.max(0, Math.min(100, state.stats[stat] + upg.monthlyBonus[stat]));
             });
         }
+        if (upg.monthlyUpkeep) {
+            totalUpkeep += upg.monthlyUpkeep;
+        }
     });
+
+    if (totalUpkeep > 0) {
+        state.stats.finance = Math.max(0, state.stats.finance - totalUpkeep);
+        goalDesc.innerHTML += `<div class="upkeep-note"><i class="fas fa-screwdriver-wrench"></i> Geliştirme bakım giderleri: <strong>-%${totalUpkeep} Kasa</strong></div>`;
+    }
 
     updateStatsUI();
     
