@@ -311,22 +311,22 @@ export const events = [
     },
     {
         id: "ceo_visit",
-        title: "Aura Global CEO'su Geliyor",
+        title: "Genel Müdür Sürpriz Ziyareti",
         category: "BÖLGE YÖNETİMİ",
-        emoji: "🚁",
-        desc: "Aura Global CEO'sunun helikopterle bölgeye iniş yaptığı ve 20 dakika sonra store'u teftiş edeceği bildirildi!",
+        emoji: "🚘",
+        desc: "Aura Türkiye Genel Müdürü'nün bölgedeki mağazaları habersiz gezdiği ve yarım saat içinde size uğrayacağı haberi geldi. Mağaza öğlen yoğunluğunda, reyonlar dağınık!",
         character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
         options: [
             {
-                text: "Herkesi sıraya diz, CEO'yu ayakta alkışlarla karşıla.",
+                text: "Tüm ekibi satıştan çekip acil toparlanma seferberliği başlat.",
                 effect: { staff: -15, customer: -10, hq: 25, finance: -5 }
             },
             {
-                text: "Sakin ve profesyonel kalalım, olağan dışı karşılama hazırlama.",
+                text: "Sakin ve profesyonel kalalım, mağaza nasılsa öyle görünsün.",
                 effect: { staff: 10, customer: 5, hq: -15, finance: 0 }
             },
             {
-                text: "Bölge yönetimi duymasın, acil hastalık izni alıp mağazadan kaç!",
+                text: "'Dış toplantı' bahanesiyle mağazadan ayrıl, yardımcına bırak.",
                 effect: { staff: 20, customer: 0, hq: -30, finance: 0 }
             }
         ]
@@ -685,11 +685,11 @@ export const events = [
     },
     {
         id: "firat_gokhan_mining_followup_b",
-        title: "Sunucu Patlaması",
+        title: "Elektrik Krizi",
         category: "ZİNCİRLEME GÖREV",
         emoji: "💥",
         isChainCard: true,
-        desc: "Desteklediğiniz kripto madenciliği yüzünden sunucular aşırı ısındı ve AVM'nin o bloktaki trafosunu patlattı! AVM yönetimi mağazaya ağır ceza kesti.",
+        desc: "Desteklediğiniz kripto madenciliği sunucuları aşırı ısıttı; mağazanın elektrik tesisatı arızalandı ve sigortalar gün boyu attı. AVM yönetimi aşırı tüketim tespit edip mağazaya ağır ceza kesti.",
         character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
         options: [
             {
@@ -864,6 +864,197 @@ export const events = [
             {
                 text: "Şu an ciroya odaklanmalıyız, gereksiz masraf yapmayalım.",
                 effect: { hq: -10, finance: 5 }
+            }
+        ]
+    },
+    {
+        id: "salary_raise_request",
+        title: "Toplu Zam Talebi",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "💸",
+        desc: "Yıllık enflasyon rakamları açıklandıktan sonra ekip, Can'ı sözcü seçip yanınıza gönderdi: 'Müdürüm, maaşlar eridi. İyileştirme istiyoruz; yoksa AVM'deki diğer mağazalara bakmak zorunda kalacağız.'",
+        character: { name: "Can", title: "Mağaza Müdür Yardımcısı", emoji: "🏃‍♂️" },
+        options: [
+            {
+                text: "Bölge yönetimine resmi zam talebi raporu hazırlayıp gönder.",
+                effect: { staff: 15, hq: -10, finance: 0 }
+            },
+            {
+                text: "'Bütçe yok' deyip şirket politikasının arkasına sığın.",
+                effect: { staff: -20, hq: 5, finance: 5 }
+            },
+            {
+                text: "Kendi inisiyatifinle kasadan satış primi havuzu oluştur.",
+                effect: { staff: 10, customer: 5, hq: -5, finance: -12 }
+            }
+        ]
+    },
+    {
+        id: "sick_leave_wave",
+        title: "Grip Salgını",
+        category: "ANİ OLAY",
+        emoji: "🤒",
+        desc: "Mevsimsel grip ekibi vurdu: üç çalışan aynı anda raporlu. Hafta sonu yoğunluğu kapıda ve kasalarda personel eksik kalacak.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
+        options: [
+            {
+                text: "Kalan ekiple idare edin, herkes ek vardiyaya kalsın.",
+                effect: { staff: -15, customer: -10, finance: 5 }
+            },
+            {
+                text: "Bölgeden geçici destek personeli talep et.",
+                effect: { staff: 5, customer: 10, hq: -10, finance: -8 }
+            }
+        ]
+    },
+    {
+        id: "wrong_shipment",
+        title: "Yanlış Sevkiyat",
+        category: "GÜNLÜK OPERASYON",
+        emoji: "📦",
+        desc: "Haftalık sevkiyat kolileri açıldığında sipariş edilen AuraPhone'lar yerine koliler dolusu kılıf ve kablo çıktı. Vitrindeki telefon stoğu tükenmek üzere.",
+        character: { name: "Gökhan", title: "Satış Temsilcisi", emoji: "🙋‍♂️" },
+        options: [
+            {
+                text: "Standart iade sürecini bekle, hafta boyu eksik stokla satış yap.",
+                effect: { customer: -15, hq: 5, finance: -5 }
+            },
+            {
+                text: "Acil kurye ile doğru ürünleri getirt, masrafı kasadan öde.",
+                effect: { customer: 10, staff: 5, finance: -12 }
+            }
+        ]
+    },
+    {
+        id: "mall_service_fee",
+        title: "AVM Aidat Zammı",
+        category: "GÜNLÜK OPERASYON",
+        emoji: "🧾",
+        desc: "AVM yönetimi ortak gider aidatlarına %40 zam yaptığını resmi yazıyla tebliğ etti. Aylık bütçe planlaması altüst oldu.",
+        options: [
+            {
+                text: "Zammı sineye çek, bütçeden öde.",
+                effect: { finance: -15, hq: 5 }
+            },
+            {
+                text: "Diğer mağaza müdürleriyle birleşip AVM yönetimine itiraz et.",
+                effect: { finance: -5, hq: -10, staff: 5 }
+            }
+        ]
+    },
+    {
+        id: "till_shortage",
+        title: "Kasa Açığı",
+        category: "GÜNLÜK OPERASYON",
+        emoji: "🧮",
+        desc: "Gün sonu sayımında kasada 1.500₺ açık çıktı. İade fişleri ile satış kayıtları tutmuyor ve kimse nedenini bilmiyor.",
+        character: { name: "Enes", title: "Satış Danışmanı", emoji: "🧑‍💻" },
+        options: [
+            {
+                text: "Gün boyu kamera ve fiş kayıtlarını didik didik incele.",
+                effect: { staff: -10, hq: 10, finance: 5 }
+            },
+            {
+                text: "Açığı kapatıp ekibe kasa disiplini eğitimi planla.",
+                effect: { staff: 5, hq: -5, finance: -8 }
+            }
+        ]
+    },
+    {
+        id: "online_reviews",
+        title: "Düşen Çevrim İçi Puanlar",
+        category: "PAZARLAMA",
+        emoji: "⭐",
+        desc: "Mağazanın haritalardaki puanı son şikayet yorumlarıyla 2,9'a düştü. Yeni müşteriler mağazaya gelmeden önce bu yorumları okuyor.",
+        character: { name: "Gizem", title: "Sosyal Medya Sorumlusu", emoji: "📸" },
+        options: [
+            {
+                text: "Memnun müşterilere çekilişli yorum kampanyası başlat.",
+                effect: { customer: 15, hq: 5, finance: -10 }
+            },
+            {
+                text: "Ekiple mesai sonrası kalıp her olumsuz yoruma tek tek cevap yazın.",
+                effect: { staff: -10, customer: 10, hq: 5 }
+            }
+        ]
+    },
+    {
+        id: "staff_poaching",
+        title: "Rakipten Transfer Teklifi",
+        category: "PERSONEL YÖNETİMİ",
+        emoji: "🧲",
+        desc: "Gökhan, karşı koridordaki rakip mağazadan %30 zamlı teklif aldığını dürüstçe söyledi. En iyi aksesuar satıcınız o; gidişi hem ekibi hem ciroyu sarsar.",
+        character: { name: "Gökhan", title: "Satış Temsilcisi", emoji: "🙋‍♂️" },
+        options: [
+            {
+                text: "Kasadan karşı teklif yap, ek prim sözü ver.",
+                effect: { staff: 10, finance: -10 }
+            },
+            {
+                text: "Bölgeden onun için resmi kadro yükseltmesi talep et.",
+                effect: { staff: 15, hq: -12 }
+            },
+            {
+                text: "Yolu açık olsun; kimse vazgeçilmez değildir.",
+                effect: { staff: -15, customer: -10, finance: 5 }
+            }
+        ]
+    },
+    {
+        id: "service_backlog",
+        title: "Teknik Servis Yığılması",
+        category: "MÜŞTERİ DENEYİMİ",
+        emoji: "🛠️",
+        desc: "Garanti onarımları merkez serviste yığıldı; bekleme süresi 3 haftayı aştı. Cihazını bekleyen müşteriler her gün mağazayı arayıp kasadaki ekibi meşgul ediyor.",
+        character: { name: "Fırat", title: "Teknik Destek Sorumlusu", emoji: "🔧" },
+        options: [
+            {
+                text: "Bekleyen müşterilere teşhir fazlası ödünç cihaz tahsis et.",
+                effect: { customer: 15, staff: -5, finance: -10 }
+            },
+            {
+                text: "Prosedürü savun: 'Süreç merkezde, elimizden bir şey gelmez.'",
+                effect: { customer: -15, staff: 5, hq: 5 }
+            },
+            {
+                text: "Bölgeye eskalasyon yapıp süreci hızlandırmalarını iste.",
+                effect: { customer: 10, hq: -10 }
+            }
+        ]
+    },
+    {
+        id: "mandatory_training",
+        title: "Zorunlu E-Eğitim Haftası",
+        category: "BÖLGE YÖNETİMİ",
+        emoji: "🎓",
+        desc: "Genel merkez, tüm personele bu hafta bitmesi gereken zorunlu yeni ürün eğitimi atadı. Tamamlanma oranı bölge karnenize işlenecek; ama hafta sonu kampanya yoğunluğu var.",
+        character: { name: "Batıkan Bey", title: "Bölge Müdürü", emoji: "👔" },
+        options: [
+            {
+                text: "Mesai saatinde sırayla tamamlatın, reyonlar ara ara boş kalsın.",
+                effect: { customer: -12, staff: -5, hq: 12 }
+            },
+            {
+                text: "Eğitimi sessizce erteleyin, müşteri her şeyden önce gelir.",
+                effect: { customer: 5, staff: 5, hq: -15 }
+            }
+        ]
+    },
+    {
+        id: "corporate_bulk_order",
+        title: "Kurumsal Toplu Sipariş",
+        category: "SATIŞ FIRSATI",
+        emoji: "🏢",
+        desc: "Bir şirket, çalışanlarına dağıtmak üzere 30 adet AuraBook almak istiyor; ancak ödemeyi 60 gün vadeli yapmayı şart koşuyor. Nakit akışı sıkışabilir.",
+        character: { name: "Semih", title: "Kıdemli Satış Temsilcisi", emoji: "💬" },
+        options: [
+            {
+                text: "Vadeyi kabul et, bölgeye rekor satışı raporla.",
+                effect: { finance: -5, hq: 10, customer: 10 }
+            },
+            {
+                text: "'Sadece peşin çalışırız' de, siparişi riske at.",
+                effect: { finance: 5, hq: -10, customer: -5 }
             }
         ]
     }
