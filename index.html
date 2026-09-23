@@ -17,6 +17,7 @@
 
     <!-- ===================== OYUN EKRANI ===================== -->
     <main class="game">
+      <aside class="game-side">
         <header class="topbar">
             <div class="topbar-when">
                 <span id="game-date" class="topbar-date">Ay 1, Hafta 1</span>
@@ -88,6 +89,12 @@
             <span id="campaign-banner-desc" class="campaign-desc"></span>
         </div>
 
+        <section class="upgrades-widget hidden" id="upgrades-widget">
+            <span class="mono">Mağazada kurulu</span>
+            <div class="upgrade-tags" id="active-upgrades-list"></div>
+        </section>
+      </aside>
+
         <!-- Olay kartı: ekip grubuna düşen mesaj -->
         <section class="event-card" id="event-card" aria-live="polite">
             <div class="thread-meta">
@@ -111,18 +118,13 @@
             <p class="reply-hint mono">Cevabın · <span class="hint-dot mag-1"></span> hafif <span class="hint-dot mag-2"></span> sert, yönü sen bul</p>
             <div class="choices" id="choices-container"></div>
         </section>
-
-        <section class="upgrades-widget hidden" id="upgrades-widget">
-            <span class="mono">Mağazada kurulu</span>
-            <div class="upgrade-tags" id="active-upgrades-list"></div>
-        </section>
     </main>
 
     <!-- ===================== GİRİŞ: ATAMA YAZISI ===================== -->
     <div id="welcome-screen" class="sheet-overlay">
         <div class="sheet">
 
-            <div id="menu-main" class="panel">
+            <div id="menu-main" class="panel panel-wide">
                 <div class="letterhead mono">
                     <span>AVM Şubeleri Bölge Müdürlüğü</span>
                     <span>Sayı: 2026/047</span>
@@ -135,8 +137,8 @@
                     <div class="signature">
                         <div class="stamp" aria-hidden="true"><span>BÖLGE</span><strong>ATANDI</strong><span>2026</span></div>
                         <div class="signer">
-                            <span class="signer-hand">B. Aksoy</span>
-                            <span class="signer-name">Batıkan Aksoy, Bölge Müdürü</span>
+                            <span class="signer-hand">B. Dikyar</span>
+                            <span class="signer-name">Batıkan Dikyar, Bölge Müdürü</span>
                         </div>
                     </div>
                 </div>
@@ -232,7 +234,7 @@
 
     <!-- ===================== AY SONU FİŞİ ===================== -->
     <div id="monthly-modal" class="sheet-overlay counter hidden">
-        <div class="sheet">
+        <div class="sheet sheet-month">
             <div class="receipt">
                 <div class="receipt-head">
                     <h2 id="modal-month-name" class="receipt-title">Ay sonu raporu</h2>
@@ -259,19 +261,22 @@
                 <div class="receipt-row total"><span>Geliştirme bütçesi</span><span id="shop-budget-val">₺0</span></div>
             </div>
 
+            <div class="month-side">
             <div class="coupons">
                 <span class="mono coupons-title">AVM'den bu ayın teklifleri · biri seçilebilir</span>
                 <div id="shop-items-list" class="coupon-list"></div>
             </div>
 
             <button id="next-month-btn" class="btn-primary" type="button">Yeni aya geç</button>
+            </div>
         </div>
     </div>
 
     <!-- ===================== SON: BAŞARI ===================== -->
     <div id="retirement-screen" class="sheet-overlay hidden">
-        <div class="sheet">
+        <div class="sheet sheet-ending">
             <div class="letter ending">
+                <div class="ending-main">
                 <div class="stamp stamp-good" aria-hidden="true"><span>BÖLGE</span><strong>TEBRİKLER</strong><span>2026</span></div>
                 <h1 class="hero-title small" id="retirement-title">Bir yıl tamam!</h1>
                 <p id="retirement-reason" class="ending-text"></p>
@@ -281,11 +286,14 @@
                     <div><dt>Puan</dt><dd id="retirement-earned-score">0 Puan</dd></div>
                     <div><dt>Rekorun</dt><dd id="retirement-best">0 Puan</dd></div>
                 </dl>
+                </div>
+                <div class="ending-side">
                 <h3 class="mono section-label">Hafta hafta mağaza</h3>
                 <div id="retirement-chart-container" class="chart"></div>
                 <div class="chart-legend mono"><span class="k-staff">Personel</span><span class="k-customer">Müşteri</span><span class="k-hq">Bölge</span><span class="k-finance">Kasa</span></div>
                 <h3 class="mono section-label">Sıralama</h3>
                 <ol class="leaderboard-list" id="retirement-leaderboard-list"></ol>
+                </div>
             </div>
             <button id="retirement-play-again-btn" class="btn-primary" type="button">Yeniden atan</button>
         </div>
@@ -293,8 +301,9 @@
 
     <!-- ===================== SON: GÖREVDEN ALINMA ===================== -->
     <div id="gameover-screen" class="sheet-overlay hidden">
-        <div class="sheet">
+        <div class="sheet sheet-ending">
             <div class="letter ending">
+                <div class="ending-main">
                 <div class="stamp" aria-hidden="true"><span>BÖLGE</span><strong>İPTAL</strong><span>2026</span></div>
                 <p class="mono letter-subject">Konu: Görevden alma</p>
                 <h1 class="hero-title small" id="gameover-title">Görevden alındın</h1>
@@ -305,11 +314,14 @@
                     <div><dt>Puan</dt><dd id="gameover-earned-score">0 Puan</dd></div>
                     <div><dt>Rekorun</dt><dd id="gameover-best">0 Puan</dd></div>
                 </dl>
+                </div>
+                <div class="ending-side">
                 <h3 class="mono section-label">Hafta hafta mağaza</h3>
                 <div id="gameover-chart-container" class="chart"></div>
                 <div class="chart-legend mono"><span class="k-staff">Personel</span><span class="k-customer">Müşteri</span><span class="k-hq">Bölge</span><span class="k-finance">Kasa</span></div>
                 <h3 class="mono section-label">Sıralama</h3>
                 <ol class="leaderboard-list" id="leaderboard-list"></ol>
+                </div>
             </div>
             <button id="play-again-btn" class="btn-primary" type="button">Başka şubeye başvur</button>
         </div>
