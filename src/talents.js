@@ -26,7 +26,7 @@ export const TALENTS = [
     {
         id: "negotiation",
         name: "Pazarlık Ustalığı",
-        desc: "Ay sonundaki mağaza geliştirme (upgrades) fiyatlarını %20 ucuzlatır.",
+        desc: "Ay sonu geliştirme fiyatlarını %20 ucuzlatır.",
         cost: 2,
         emoji: "🤝",
         req: "leadership"
@@ -42,7 +42,7 @@ export const TALENTS = [
     {
         id: "crisis_resilience",
         name: "Kriz Direnci",
-        desc: "Herhangi bir istatistik %15'in altına düştüğünde, ceza etkilerini yarı yarıya azaltır.",
+        desc: "Bir bar kenara yaklaştığında (%15 altı ya da %85 üstü) onu kenara iten etkileri yarıya indirir.",
         cost: 3,
         emoji: "🛡️",
         req: null
