@@ -39,8 +39,8 @@
                         <span id="game-date" class="date-value">Yıl 1, Ay 1, Hafta 1</span>
                     </div>
                     <div class="age-badge">
-                        <span class="age-label">Müdür Yaşı</span>
-                        <span id="game-age" class="age-value">20 Yaş</span>
+                        <span class="age-label">Hafta</span>
+                        <span id="game-age" class="age-value">1 / 48</span>
                     </div>
                     <div class="score-badge">
                         <span class="score-label">En İyi Skor</span>
@@ -317,20 +317,20 @@
                     <h2>📖 Nasıl Oynanır?</h2>
                 </div>
                 <div class="menu-scroll-body">
-                    <p><strong>Aura Store Müdürü</strong> olarak premium teknoloji mağazanızın yönetimini devralıyorsunuz. Amacınız, haftalık kararlarla mağazayı batırmadan olabildiğince uzun süre müdürlük yapmak!</p>
+                    <p>Bir AVM'deki teknoloji mağazasına müdür olarak atandın. Görevin bir yıl (48 hafta) boyunca mağazayı ayakta tutmak.</p>
                     <hr class="menu-divider" />
-                    <h3>📊 Yönetmeniz Gereken 4 Metrik:</h3>
+                    <h3>📊 Dört Bar, İki Uç</h3>
                     <ul class="menu-rules-list">
-                        <li><i class="fas fa-users staff-color"></i> <strong>Personel Morali:</strong> Çalışanlarınızın mutluluğu. Düşerse grev yapıp işi bırakırlar!</li>
-                        <li><i class="fas fa-face-smile-beam customer-color"></i> <strong>Müşteri Deneyimi:</strong> Satın alım yapan hayranların sevgisi. Çok düşerse mağaza boykot edilir!</li>
-                        <li><i class="fas fa-map-location-dot hq-color"></i> <strong>Bölge Mutluluk:</strong> Bölge müdürü ve yönetimin memnuniyeti. Çok düşerse kovulursunuz!</li>
-                        <li><i class="fas fa-vault finance-color"></i> <strong>Kasa Bütçesi:</strong> Mağazanın finansal gücü. Tükenecek olursa iflas edersiniz!</li>
+                        <li><i class="fas fa-users staff-color"></i> <strong>Personel:</strong> Sıfırlanırsa ekip istifa eder. Tavana vurursa ekip şımarır, düzen kalmaz.</li>
+                        <li><i class="fas fa-face-smile-beam customer-color"></i> <strong>Müşteri:</strong> Sıfırlanırsa boykot başlar. Tavana vurursa her şeye evet demişsindir, kâr kalmaz.</li>
+                        <li><i class="fas fa-map-location-dot hq-color"></i> <strong>Bölge:</strong> Sıfırlanırsa kovulursun. Tavana vurursa terfi edersin, ama sadece 6. aydan sonra ve diğer barlar %40'ın üstündeyse. Yoksa merkez ofise tayin edilirsin.</li>
+                        <li><i class="fas fa-vault finance-color"></i> <strong>Kasa:</strong> Sıfırlanırsa iflas. Tavana vurursa hiç yatırım yapmamışsın demektir, denetime alınırsın.</li>
                     </ul>
                     <hr class="menu-divider" />
-                    <h3>🎯 Haftalık Akış ve Ay Sonu Geliştirmeleri:</h3>
-                    <p>Her hafta karşınıza gelen olaylarda şıklardan birini seçin. Rozetler yalnızca <strong>hangi metriklerin etkileneceğini</strong> gösterir; etkinin yönünü ve büyüklüğünü gerçek hayatta olduğu gibi öngörmeniz gerekir. Kolay modda etki yönleri (artış/azalış) görünür, Zor modda hiçbir ipucu verilmez. Aynı karar her seferinde birebir aynı sonucu da vermez!</p>
-                    <p>Mağazanın kira, maaş ve fatura gibi <strong>haftalık işletme giderleri</strong> her hafta kasadan düşer; ilerleyen yıllarda bu giderler artar. Kasayı boş bırakmayın!</p>
-                    <p>Her 4 haftada bir (ay sonu) Bölge yönetimi tarafından belirlenen **Aylık Hedefi** tutturup tutturmadığınız kontrol edilir; hedefler görevde kaldığınız her ay biraz daha yükselir. Hedefi tutturursanız ek bütçe kazanırsınız. Kazandığınız bütçeyle **Geliştirme Pazarı**'ndan pasif yetenekler satın alabilirsiniz — ancak bazı geliştirmelerin her ay kasadan düşen <strong>bakım gideri</strong> olduğunu unutmayın.</p>
+                    <h3>🎯 İpuçları</h3>
+                    <p>Seçeneklerin altında hangi barın ne kadar oynayacağı görünür: küçük nokta <strong>hafif</strong>, büyük nokta <strong>sert</strong>. Yönünü hikâyeden sen çıkarırsın. Kolay modda yön okları da görünür, Zor modda sadece hangi barların etkileneceği görünür.</p>
+                    <p>Kira ve maaşlar yüzünden kasa zaman zaman kendiliğinden erir. Her ay Bölge sana hedef verir; tutarsa Bölge memnun olur ve prim gelir, kaçarsa Bölge'den puan gider.</p>
+                    <p>Ay sonunda kasanın durumuna göre <strong>geliştirme bütçesi</strong> (₺) gelir. Ayda bir geliştirme alabilirsin; bazılarının aylık bakım gideri vardır.</p>
                 </div>
                 <button id="rules-back-btn" class="action-btn menu-btn">
                     <i class="fas fa-arrow-left"></i> Geri Dön
@@ -458,11 +458,11 @@
                         <div class="shop-header">
                             <h3>🛒 Aura Geliştirme Pazarı</h3>
                             <div class="budget-tracker">
-                                <span>Kasa Bütçeniz:</span>
-                                <span id="shop-budget-val" class="shop-budget">50%</span>
+                                <span>Geliştirme bütçesi:</span>
+                                <span id="shop-budget-val" class="shop-budget">₺0</span>
                             </div>
                         </div>
-                        <p class="shop-info">Kasadaki bütçenizi mağazayı geliştirmek için kullanın. Her geliştirme kalıcı pasif bonuslar sağlar!</p>
+                        <p class="shop-info">Her ay kasanın durumuna göre bütçe gelir; tutan her hedef ayrıca prim getirir. Ayda en fazla bir geliştirme alabilirsin. Bakım giderleri bütçeden düşer, bütçe yetmezse fark kasadan çıkar.</p>
                         
                         <div class="shop-items-grid" id="shop-items-list">
                             <!-- Dynamic shop items -->
@@ -478,40 +478,14 @@
             </div>
         </div>
 
-        <!-- Voluntary Retirement Choice Modal -->
-        <div id="retirement-choice-modal" class="modal-overlay hidden">
-            <div class="modal-content glass-panel animated-modal text-center" style="max-width: 500px;">
-                <div class="modal-header" style="justify-content: center; flex-direction: column; align-items: center; gap: 8px;">
-                    <span style="font-size: 3rem;">🏖️</span>
-                    <h2 style="margin: 0; color: #f59e0b; font-family: var(--font-heading);">Emeklilik Zamanı Geldi!</h2>
-                </div>
-                <div class="modal-body" style="padding: 20px 0;">
-                    <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
-                        Tebrikler! 45 yıldır bu mağazayı başarıyla yönettiniz ve <strong>65 yaşına</strong> ulaştınız. Bölge yönetimi size şerefli bir emeklilik ve ömür boyu huzur teklif ediyor.
-                    </p>
-                    <p style="font-size: 0.9rem; line-height: 1.6; color: #a855f7; font-weight: bold;">
-                        Şimdi emekli olup başarılarınızı taçlandırabilir veya mağaza aşkıyla 100 yaşına kadar çalışmaya devam edebilirsiniz!
-                    </p>
-                </div>
-                <div class="modal-footer" style="display: flex; gap: 12px; justify-content: center; width: 100%;">
-                    <button id="retire-accept-btn" class="action-btn gold-btn" style="flex: 1;">
-                        <i class="fas fa-umbrella-beach"></i> Emekli Ol
-                    </button>
-                    <button id="retire-decline-btn" class="action-btn outline-btn" style="flex: 1;">
-                        <i class="fas fa-briefcase"></i> Çalışmaya Devam Et
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Retirement Screen Overlay (Victory) -->
         <div id="retirement-screen" class="modal-overlay hidden">
             <div class="gameover-content glass-panel text-center retirement-theme">
                 <div class="gameover-icon">
                     <i class="fas fa-award" style="color:#f59e0b; font-size:3.5rem; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));"></i>
                 </div>
-                <h1 class="retirement-title">Tebrikler, Emekli Oldunuz!</h1>
-                <p id="retirement-reason" class="retirement-reason">Mağazayı başarıyla yöneterek onurlu bir emekliliğe hak kazandınız.</p>
+                <h1 class="retirement-title" id="retirement-title">Bir Yıl Tamam!</h1>
+                <p id="retirement-reason" class="retirement-reason">Bir yılı görevden alınmadan bitirdin.</p>
                 
                 <div class="gameover-stats-grid">
                     <div class="gameover-stat-box">
@@ -519,8 +493,8 @@
                         <span id="retirement-tenure" class="value">0 Hafta</span>
                     </div>
                     <div class="gameover-stat-box">
-                        <span class="label">Müdür Yaşı</span>
-                        <span id="retirement-age" class="value">65 Yaş</span>
+                        <span class="label">Mağazaya Yatırım</span>
+                        <span id="retirement-age" class="value">0 geliştirme</span>
                     </div>
                     <div class="gameover-stat-box gold-stat-box">
                         <span class="label">Kazanılan Skor</span>
@@ -566,7 +540,7 @@
                 <div class="gameover-icon">
                     <i class="fas fa-circle-exclamation" style="color:var(--color-danger); font-size:3.5rem;"></i>
                 </div>
-                <h1 class="gameover-title">Kovuldunuz!</h1>
+                <h1 class="gameover-title" id="gameover-title">Görevden Alındın</h1>
                 <p id="gameover-reason" class="gameover-reason">Personel ekibiniz istifa etti.</p>
                 
                 <div class="gameover-stats-grid">

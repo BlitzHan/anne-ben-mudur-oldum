@@ -16,13 +16,15 @@ Aura Store Müdürü, **CSS Glassmorphism** (buzlu cam) efektleri, akıcı anima
 
 ---
 
-## 📊 Yönetilmesi Gereken 4 Kritik Metrik
-Müdür olarak her hafta karşınıza gelen kritik kararlarda seçimler yapmalısınız. Amacınız aşağıdaki 4 metriğin herhangi birini **%0** seviyesine düşürmemektir:
+## 📊 Dört Bar, İki Uç
+Kariyer bir yıl (48 hafta) sürer. Dört barın hiçbiri **sıfırlanmamalı ve tavana vurmamalı**:
 
-*   **👥 Personel Morali:** Çalışanların motivasyonu. Sıfırlanırsa ekip greve gider.
-*   **😊 Müşteri Deneyimi:** Aura hayranlarının mağaza memnuniyeti. Sıfırlanırsa boykot başlar.
-*   **🤵 Bölge Mutluluk:** Bölge müdürlüğü ve genel merkezin sizden memnuniyeti. Sıfırlanırsa kovulursunuz.
-*   **💰 Kasa Bütçesi:** Mağazanın finansal rezervi. Sıfırlanırsa mağaza iflas eder.
+*   **Personel:** Sıfırda ekip istifa eder, tavanda ekip şımarır.
+*   **Müşteri:** Sıfırda boykot, tavanda "her şeye evet" deyip kârı eritmişsindir.
+*   **Bölge:** Sıfırda kovulursun. Tavanda 6. aydan sonra ve mağaza sağlıklıysa (diğer barlar ≥ %40) **terfi**, değilse merkeze tayin.
+*   **Kasa:** Sıfırda iflas, tavanda yatırım yapmadığın için denetime alınırsın.
+
+Seçenekler hangi barın **ne kadar** oynayacağını (hafif/sert nokta) gösterir, **yönünü** göstermez. Kolay modda yön okları da görünür, Zor modda sadece hangi barların etkileneceği görünür.
 
 ---
 
@@ -35,16 +37,23 @@ Oyuna başlarken adınızı girdikten sonra, farklı avantaj ve dezavantajlara s
 
 ---
 
-## 🛒 AVM Geliştirme Pazarı & Aylık Hedefler
-*   **Aylık Hedefler:** Her ay başında bölge yönetimi size bir hedef belirler. Hedefi tutturursanız ay sonunda kasa bütçenize ek prim kazanırsınız.
-*   **Geliştirme Pazarı:** Kazandığınız bütçeleri ay sonu raporunda mağazayı geliştirmek için harcayabilirsiniz. Alınan pasif geliştirmeler şunlardır:
-    *   🍔 **Müşteri Yorumlu Yemek Ödülü:** Müşteri yorumuna göre personele lüks yemekler. (Her ay sonu +4% Personel Morali, +4% Müşteri Deneyimi)
-    *   🥞 **AVM Kahvaltı Etkinliği:** Pazar sabahları ekip kahvaltısı. (Her ay sonu +6% Personel Morali)
-    *   💪 **AVM MacFit Spor Anlaşması:** Çalışanlara indirimli spor üyeliği. (Her ay sonu +5% Personel Morali, +2% Bölge Mutluluğu)
-    *   🏥 **Özel Sağlık Sigortası:** Ekip için geniş kapsamlı sigorta. (Her ay sonu +7% Personel Morali, +3% Bölge Mutluluğu)
-    *   🛡️ **AVM iCam Güvenlik Entegrasyonu:** Hırsızlık olaylarındaki kayıpları %50 azaltır.
-    *   ❄️ **AVM Klima & Vent Entegrasyonu:** Mağaza içi klimaların çökme olasılığını sıfırlar.
-    *   💺 **Ergonomik Personel Koltukları:** Ay sonu +3% Personel Morali sağlar, sayım/denetim kayıplarını %30 hafifletir.
+## 🛒 Aylık Hedefler & Geliştirmeler
+*   **Aylık hedefler:** Bölge her ay 1–3 hedef verir. Hepsi tutarsa Bölge memnun olur, tutmazsa Bölge'den puan gider.
+*   **Geliştirme bütçesi (₺):** Ay sonunda kasanın durumuna göre bütçe gelir, tutan her hedef ayrıca prim getirir. Ayda en fazla bir geliştirme alınabilir. Bakım giderleri bütçeden düşer, yetmezse fark kasadan çıkar.
+*   Geliştirmelerin listesi ve etkileri: `src/shop.js`.
+
+---
+
+## ⚖️ Denge Simülasyonu
+Oyun kuralları `src/engine.js` içindedir. DOM'a bağlı değildir ve tohumlu bir RNG ile çalışır. Aynı kuralları farklı oyuncu tipleriyle binlerce kez oynatmak için:
+
+```bash
+npm run sim              # normal zorluk, 2000 oyun
+npm run sim -- hard 5000
+RULES='{"effectScale":0.8}' npm run sim   # kural değiştirip dene
+```
+
+Bir kart ya da kural değiştirdiğinde simülasyonu çalıştırıp tabloya bakmak yeterli.
 
 ---
 

@@ -434,6 +434,7 @@ export const events = [
     },
     {
         id: "theft_epidemic_2a",
+        isChainCard: true,
         title: "Kameralar Devrede (Kısım 2)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "📹",
@@ -454,6 +455,7 @@ export const events = [
     },
     {
         id: "theft_epidemic_2b",
+        isChainCard: true,
         title: "Polis Pususu (Kısım 2)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "🚓",
@@ -473,6 +475,7 @@ export const events = [
     },
     {
         id: "theft_epidemic_3_good",
+        isChainCard: true,
         title: "Çete Çökertildi! (Son)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "⚖️",
@@ -487,6 +490,7 @@ export const events = [
     },
     {
         id: "theft_epidemic_3_bad",
+        isChainCard: true,
         title: "Boykot ve Şikayet! (Son)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "📢",
@@ -501,6 +505,7 @@ export const events = [
     },
     {
         id: "theft_epidemic_3_catch",
+        isChainCard: true,
         title: "Suçüstü Yakalama! (Son)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "👮",
@@ -536,6 +541,7 @@ export const events = [
     },
     {
         id: "social_crisis_2a",
+        isChainCard: true,
         title: "Personel Grevi! (Son)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "🪧",
@@ -550,6 +556,7 @@ export const events = [
     },
     {
         id: "social_crisis_2b",
+        isChainCard: true,
         title: "Gerçek Ortaya Çıktı! (Son)",
         category: "ZİNCİRLEME GÖREV",
         emoji: "🏆",
