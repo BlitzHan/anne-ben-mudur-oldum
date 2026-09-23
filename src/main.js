@@ -7,6 +7,44 @@ import { TALENTS } from './talents.js';
 const SUPABASE_URL = 'https://iijsmwlmotdsxbzmitga.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_V381dGtC_ABLRRZzPO71Ug_wO5x_SqQ';
 
+// Leaderboard rows are written by anyone with the public key, so every field
+// read back from it is untrusted. Keep these limits in sync with
+// supabase/leaderboard-guard.sql.
+const NAME_MAX_LENGTH = 20;
+const SCORE_MAX = 400000; // ~100 yaşında zorunlu emeklilik + tüm bonuslar
+const VALID_DIFFICULTIES = ['easy', 'normal', 'hard'];
+const VALID_STORE_TYPES = ['new_store', 'old_store', 'near_hq'];
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function sanitizeName(name) {
+    const cleaned = String(name || '')
+        .replace(/[\u0000-\u001f\u007f<>]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, NAME_MAX_LENGTH);
+    return cleaned || 'Müdür';
+}
+
+function isValidScoreEntry(entry) {
+    return entry
+        && typeof entry.name === 'string'
+        && entry.name.length > 0
+        && entry.name.length <= NAME_MAX_LENGTH
+        && Number.isInteger(entry.score)
+        && entry.score >= 0
+        && entry.score <= SCORE_MAX
+        && VALID_DIFFICULTIES.includes(entry.difficulty)
+        && VALID_STORE_TYPES.includes(entry.store_type);
+}
+
 // ==========================================================================
 // GAME STATE DEFINITION
 // ==========================================================================
@@ -162,7 +200,7 @@ function setupStartMenu() {
         }
 
         sound.playClick();
-        state.playerName = nameInput;
+        state.playerName = sanitizeName(nameInput);
         
         state.storeType = document.querySelector('input[name="store-type"]:checked').value;
         state.difficulty = document.querySelector('input[name="difficulty"]:checked').value;
@@ -573,8 +611,8 @@ function startNewGame() {
     
     // Update header info dynamically
     document.getElementById('header-subtitle').innerHTML = `
-        Müdür: <strong>${state.playerName}</strong> 
-        <span class="header-divider">|</span> 
+        Müdür: <strong>${escapeHtml(state.playerName)}</strong>
+        <span class="header-divider">|</span>
         ${STORE_LABELS[state.storeType]} 
         <span class="difficulty-tag ${state.difficulty}">${DIFFICULTY_LABELS[state.difficulty]}</span>
     `;
@@ -1556,7 +1594,7 @@ function saveLeaderboard(score) {
     // Save to Local Storage first
     let localScores = getLocalScores();
     localScores.push({
-        name: state.playerName || 'Müdür',
+        name: sanitizeName(state.playerName),
         score: score,
         difficulty: state.difficulty || 'normal',
         store_type: state.storeType || 'new_store',
@@ -1617,7 +1655,7 @@ async function fetchGlobalLeaderboard() {
         
         if (!response.ok) throw new Error('Supabase response error');
         const data = await response.json();
-        return data;
+        return Array.isArray(data) ? data.filter(isValidScoreEntry) : null;
     } catch (error) {
         console.error('Liderlik tablosu çekilemedi, yerel skorlar kullanılacak:', error);
         return null;
@@ -1640,7 +1678,7 @@ async function saveGlobalLeaderboard(name, score, difficulty, storeType) {
                 'Prefer': 'return=minimal'
             },
             body: JSON.stringify({
-                name: name || 'Müdür',
+                name: sanitizeName(name),
                 score: score,
                 difficulty: difficulty || 'normal',
                 store_type: storeType || 'new_store',
@@ -1674,9 +1712,9 @@ function renderScoreList(listElement, scores) {
         const item = document.createElement('li');
         item.className = `leaderboard-item ${isTop ? 'top-rank' : ''}`;
         
-        const name = entry.name || 'Müdür';
-        const score = entry.score || 0;
-        const date = entry.date || '';
+        const name = escapeHtml(sanitizeName(entry.name));
+        const score = Number.isFinite(Number(entry.score)) ? Number(entry.score) : 0;
+        const date = escapeHtml(entry.date || '');
         const storeLabel = STORE_LABELS[entry.store_type] || 'Yeni Açılan Mağaza';
         const diffLabel = DIFFICULTY_LABELS[entry.difficulty] || 'Normal';
         
