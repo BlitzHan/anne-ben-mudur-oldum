@@ -11,11 +11,11 @@ export const RULES = {
     monthsPerCareer: 12,
     startStats: { staff: 55, customer: 55, hq: 50, finance: 50 },
 
-    // Kart verisindeki ham etkiler bu oranla küçültülür (0-100 barda
-    // tek kararın 35 puan oynatması fazla sertti).
-    effectScale: 0.7,
+    // Kart verisindeki ham etkiler bu oranla ölçeklenir; tools/sim.js ile ayarlandı
+    // (durum kartları uçtaki oyuncuyu kurtardığı için 1.1).
+    effectScale: 1.1,
     // Ölçeklenmiş |etki| bu değer ve üstündeyse "büyük nokta" gösterilir.
-    bigEffect: 10,
+    bigEffect: 12,
 
     weeklyFinanceCost: 1,
     weeklyFinanceChance: 0.35, // kira/maaş baskısı: her hafta %35 ihtimalle -1 Kasa
@@ -36,7 +36,14 @@ export const RULES = {
     // Bölge 100'e ulaşınca terfi; ama erken ya da mağaza dağınıkken olursa
     // terfi değil merkez ofise tayin edilir (oyun biter, bonus yok).
     promotionMinWeek: 24,
-    promotionMinOtherStat: 40
+    promotionMinOtherStat: 40,
+
+    // Durum kartları: bir bar uca yaklaşınca dünya buna tepki verir.
+    situationalLow: 22,
+    situationalHigh: 78,
+    situationalChance: 0.5,
+    situationalGapWeeks: 2,   // iki durum kartı arasında en az bu kadar hafta
+    situationalCooldown: 10   // aynı durum kartı en erken bu kadar hafta sonra
 };
 
 export const STORE_TYPES = ['new_store', 'old_store', 'near_hq'];
@@ -70,8 +77,10 @@ const clamp = (v) => Math.max(0, Math.min(100, v));
 // ==========================================================================
 // STATE
 // ==========================================================================
+// Desteye girmeyenler: kampanya girişleri, zincir devamları, hikâye anları
+// (belirli haftada gelir) ve durum kartları (bar uca yaklaşınca gelir).
 export function isBaseCard(event) {
-    return !event.id.startsWith('campaign_') && !event.isChainCard;
+    return !event.id.startsWith('campaign_') && !event.isChainCard && !event.story && !event.trigger;
 }
 
 export function newGame({ storeType = 'new_store', difficulty = 'normal', talents = [] } = {}) {
@@ -94,6 +103,10 @@ export function newGame({ storeType = 'new_store', difficulty = 'normal', talent
         campaignWeeksLeft: 0,
         blackFridayWarning: false,
         history: [],
+        flags: {},              // hikâye bayrakları (örn. anne: annenle aran)
+        seenOnce: new Set(),    // once: true kartlar kariyerde bir kez gelir
+        situationalSeen: {},    // durum kartı id -> son geldiği hafta
+        lastSituationalWeek: -99,
         ending: null
     };
     if (state.talents.includes('quick_start')) {
@@ -116,8 +129,40 @@ const CAMPAIGNS = [
     { week: 36, id: 'audit', weeks: 2, intro: 'campaign_audit_intro' }
 ];
 
+// Belirli haftalarda gelen hikâye anları
+const STORY_BEATS = [
+    { week: 2, event: 'anne_ilk_arama' },
+    { week: 44, event: 'anne_yil_sonu' }
+];
+
 function isSkipped(state, event) {
+    if (event.once && state.seenOnce.has(event.id)) return true;
     return event.id === 'ac_broke' && state.upgrades.has('heavy_duty_ac');
+}
+
+function drawSituational(state, rng) {
+    const week = weeksServed(state);
+    if (week - state.lastSituationalWeek < RULES.situationalGapWeeks) return null;
+
+    const candidates = events.filter(e => {
+        if (!e.trigger) return false;
+        const v = state.stats[e.trigger.stat];
+        const hit = e.trigger.side === 'low' ? v <= RULES.situationalLow : v >= RULES.situationalHigh;
+        const last = state.situationalSeen[e.id];
+        return hit && (last === undefined || week - last >= RULES.situationalCooldown);
+    });
+    if (candidates.length === 0 || rng() >= RULES.situationalChance) return null;
+
+    // En uçtaki barın kartı öncelikli
+    const edge = (e) => {
+        const v = state.stats[e.trigger.stat];
+        return e.trigger.side === 'low' ? v : 100 - v;
+    };
+    candidates.sort((a, b) => edge(a) - edge(b));
+    const event = candidates[0];
+    state.situationalSeen[event.id] = week;
+    state.lastSituationalWeek = week;
+    return event;
 }
 
 function drawFromDeck(state, rng) {
@@ -159,8 +204,16 @@ export function drawEvent(state, rng) {
         }
     }
 
+    if (!event) {
+        const beat = STORY_BEATS.find(b => b.week === absoluteWeek);
+        if (beat) event = events.find(e => e.id === beat.event);
+    }
+
+    if (!event) event = drawSituational(state, rng);
+
     if (!event) event = drawFromDeck(state, rng);
 
+    if (event.once) state.seenOnce.add(event.id);
     state.currentEvent = event;
     return event;
 }
@@ -257,12 +310,20 @@ export function checkEnding(state) {
     return null;
 }
 
+// Oyun hafta ortasında biterse grafiğin son noktası da görünsün.
+function recordFinalWeek(state) {
+    state.history.push({ week: weeksServed(state) + 1, ...state.stats });
+}
+
 // Seçimi uygular. Dönüş: { deltas, hadLowStat, ending }
 export function applyChoice(state, optionIdx) {
     const event = state.currentEvent;
     const option = event.options[optionIdx];
 
     state.nextChainCardId = option.nextChainCardId || null;
+    Object.entries(option.flags || {}).forEach(([k, v]) => {
+        state.flags[k] = (state.flags[k] || 0) + v;
+    });
     if (option.queueEvent) {
         state.queuedEvents.push({ ...option.queueEvent });
     }
@@ -280,6 +341,7 @@ export function applyChoice(state, optionIdx) {
     }
 
     state.ending = checkEnding(state);
+    if (state.ending) recordFinalWeek(state);
     return { deltas, hadLowStat, ending: state.ending };
 }
 
@@ -292,7 +354,10 @@ export function endWeek(state, rng) {
     }
 
     state.ending = checkEnding(state);
-    if (state.ending) return { ending: state.ending, monthEnded: false, campaignEnded: null };
+    if (state.ending) {
+        recordFinalWeek(state);
+        return { ending: state.ending, monthEnded: false, campaignEnded: null };
+    }
 
     let campaignEnded = null;
     if (state.activeCampaign && state.campaignWeeksLeft > 0) {
@@ -388,6 +453,7 @@ export function closeMonth(state) {
 
     state.upgradesBoughtThisMonth = 0;
     state.ending = checkEnding(state);
+    if (state.ending) recordFinalWeek(state);
 
     return {
         month: state.month,

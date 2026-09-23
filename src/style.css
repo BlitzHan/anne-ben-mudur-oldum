@@ -460,12 +460,104 @@ legend { padding: 0; margin-bottom: 6px; }
 .toast-name { font-family: var(--font-display); font-weight: 800; font-size: 17px; }
 
 /* ==========================================================================
-   LARGER SCREENS
+   LAYOUT: telefonda tek sütun, geniş ekranda iki sütun
    ========================================================================== */
+/* Telefonda sol sütun kutusu kaybolur, içindekiler .game akışına katılır */
+.game-side { display: contents; }
+.event-card { order: 1; }
+.upgrades-widget { order: 2; }
+.month-side { display: flex; flex-direction: column; gap: 18px; }
+.ending-main, .ending-side { display: flex; flex-direction: column; gap: 12px; }
+
 @media (min-width: 720px) {
     .game { padding-top: 28px; gap: 18px; }
     .sheet { padding-top: 48px; }
     .gauge-tank { height: 88px; }
+}
+
+@media (min-width: 960px) {
+    /* Oyun: solda durum paneli (sabit), sağda mesaj ve cevaplar */
+    .game {
+        max-width: 1120px;
+        min-height: 100vh;
+        padding: 40px 40px 48px;
+        display: grid;
+        grid-template-columns: minmax(300px, 380px) minmax(0, 620px);
+        justify-content: center;
+        align-content: center;
+        align-items: start;
+        column-gap: 64px;
+    }
+    .game-side {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: sticky;
+        top: 40px;
+    }
+    .event-card { padding-top: 4px; gap: 16px; }
+    .bubble { padding: 16px 18px; }
+    .bubble-title { font-size: 19px; }
+    .bubble-text { font-size: 17.5px; }
+    .gauge-tank { height: 96px; }
+
+    /* Menü sayfaları ekranın ortasında, geniş kâğıt */
+    .sheet { max-width: 1080px; padding: 40px; justify-content: center; }
+    .panel { width: 100%; max-width: 480px; margin: 0 auto; flex: none; }
+
+    /* Giriş: solda başlık ve buton, sağda atama yazısı */
+    #menu-main.panel-wide {
+        max-width: 1000px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+        column-gap: 64px;
+        row-gap: 24px;
+        align-items: start;
+    }
+    #menu-main .letterhead { grid-column: 1 / -1; }
+    #menu-main .hero-title { grid-column: 1; grid-row: 2; font-size: 76px; align-self: end; }
+    #menu-main .letter { grid-column: 2; grid-row: 2 / span 3; }
+    #menu-main .btn-primary { grid-column: 1; grid-row: 3; max-width: 360px; align-self: end; }
+    #menu-main .text-links { grid-column: 1; grid-row: 4; justify-content: flex-start; }
+
+    /* Ay sonu: solda fiş, sağda kuponlar */
+    .sheet-month {
+        display: grid;
+        grid-template-columns: minmax(0, 420px) minmax(0, 480px);
+        justify-content: center;
+        align-content: center;
+        align-items: start;
+        column-gap: 40px;
+    }
+
+    /* Oyun sonu: solda yazı ve rakamlar, sağda grafik ve sıralama */
+    .sheet-ending { max-width: 1040px; }
+    .letter.ending {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 48px;
+        padding: 32px 32px 28px;
+    }
+    .ending .stamp { position: static; order: 10; align-self: flex-end; margin-top: 8px; }
+    .ending .hero-title { padding-right: 0; }
+    .ending-side { padding-top: 4px; }
+    .ending-side .section-label:first-child { margin-top: 0; }
+    .sheet-ending > .btn-primary { max-width: 360px; align-self: center; }
+}
+
+@media (min-width: 960px) and (min-height: 780px) {
+    .gauge-tank { height: 116px; }
+    .gauge-icon { transform: scale(1.2); }
+    .topbar-date { font-size: 26px; }
+    .bubble-text { font-size: 18px; }
+    .option-text { font-size: 17px; }
+}
+
+@media (min-width: 960px) and (max-height: 760px) {
+    .game { padding-top: 24px; }
+    .game-side { top: 24px; gap: 12px; }
+    .gauge-tank { height: 80px; }
+    .note-text { font-size: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -105,7 +105,7 @@ const ENDINGS = {
             high: 'Her müşteriye evet dedin: iadeler, indirimler, sıfırıyla değişimler... Kâr kalmadı, merkez seni görevden aldı.'
         },
         hq: {
-            low: 'Bölge Müdürü habersiz denetimde mağazayı darmadağın buldu ve işine son verdi.',
+            low: 'Batıkan Bey habersiz denetimde mağazayı darmadağın buldu ve işine son verdi.',
             high: 'Bölge seni çok sevdi.'
         },
         finance: {
@@ -895,12 +895,32 @@ function closeMonthlyModal() {
 // ENDINGS
 // ==========================================================================
 function endingText(ending) {
-    if (ending.type === 'fired') return ENDINGS.fired[ending.stat][ending.side];
-    if (ending.type === 'transferred') return ENDINGS.transferred;
-    if (ending.type === 'promoted') {
-        return `${weeksServed(game)} haftada mağazayı toparladın, Batıkan Bey seni yerine önerdi. Artık Bölge Müdürüsün. Annene haber ver!`;
+    let text;
+    if (ending.type === 'fired') text = ENDINGS.fired[ending.stat][ending.side];
+    else if (ending.type === 'transferred') text = ENDINGS.transferred;
+    else if (ending.type === 'promoted') {
+        text = `${weeksServed(game)} haftada mağazayı toparladın, Batıkan Dikyar seni yerine önerdi. Artık Bölge Müdürüsün.`;
+    } else {
+        text = 'Bir yılı görevden alınmadan bitirdin. Yıl sonu değerlendirmesinde adın "yılın mağazası" listesinde.';
     }
-    return 'Bir yılı görevden alınmadan bitirdin. Yıl sonu değerlendirmesinde adın "yılın mağazası" listesinde.';
+    return `${text} ${motherLine(ending)}`;
+}
+
+// Anne kartlarındaki seçimler oyun sonunda bir satırla karşılık bulur.
+function motherLine(ending) {
+    const anne = game.flags.anne || 0;
+    const good = ending.type === 'promoted' || ending.type === 'year_complete';
+    if (anne >= 2) {
+        return good
+            ? 'Annen kupürü çerçeveletti bile; pazar sofrasında yerin hazır.'
+            : 'Annen "boş ver, sen sağ ol" dedi; akşam yemeğe bekliyor.';
+    }
+    if (anne <= -2) {
+        return good
+            ? 'Annen haberi komşudan duymuş. "Bir telefon açsaydın" diye sitem ediyor.'
+            : 'Annen haberi komşudan duymuş, hâlâ telefonunu bekliyor.';
+    }
+    return good ? 'Annene haber ver!' : 'Annene nasıl anlatacaksın, bilmiyoruz.';
 }
 
 function finishGame() {
