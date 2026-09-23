@@ -3,595 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Store Müdürü - Yönetim Simülasyonu</title>
-    <!-- Google Fonts -->
+    <meta name="theme-color" content="#F3EDE1">
+    <title>Anne Ben Müdür Oldum</title>
+    <meta name="description" content="Bir AVM teknoloji mağazasına müdür oldun. Bir yıl dayanabilecek misin?">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css">
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>✨</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%231E2433%22/><text x=%2216%22 y=%2223%22 font-family=%22Georgia,serif%22 font-size=%2220%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23F3EDE1%22>M</text></svg>">
 </head>
 <body>
-    <div id="app">
-        <!-- Background Elements -->
-        <div class="bg-glow bg-glow-1"></div>
-        <div class="bg-glow bg-glow-2"></div>
+<div id="app">
 
-        <!-- Main Wrapper -->
-        <main class="game-container">
-            <!-- Header Bar -->
-            <header class="game-header glass-panel">
-                <div class="header-logo">
-                    <span class="logo-emoji">✨</span>
-                    <div class="logo-text">
-                        <h1 id="header-main-title">Aura Store Müdürü</h1>
-                        <p class="subtitle" id="header-subtitle">Müdür: Giriş Yapılmadı</p>
+    <!-- ===================== OYUN EKRANI ===================== -->
+    <main class="game">
+        <header class="topbar">
+            <div class="topbar-when">
+                <span id="game-date" class="topbar-date">Ay 1, Hafta 1</span>
+                <p class="topbar-sub" id="header-subtitle">Müdür: —</p>
+            </div>
+            <div class="topbar-actions">
+                <button id="sound-toggle" class="icon-btn" type="button" aria-label="Sesi kapat"></button>
+                <button id="restart-btn" class="icon-btn" type="button" aria-label="Yeniden başlat">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>
+                </button>
+                <button id="home-btn" class="icon-btn" type="button" aria-label="Ana menü">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="progress-row">
+            <span class="mono">Hafta <span id="game-age">1 / 48</span></span>
+            <span class="mono">Rekor <span id="high-score">0 Puan</span></span>
+        </div>
+
+        <!-- Dört gösterge: iki ucu da tehlikeli -->
+        <section class="gauges" aria-label="Mağaza durumu">
+            <div class="gauge" id="stat-staff-card">
+                <div class="gauge-tank">
+                    <div id="stat-staff-bar" class="gauge-fill" style="height: 55%"></div>
+                    <div class="gauge-edge top"></div><div class="gauge-edge bottom"></div>
+                    <svg class="gauge-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="16.5" cy="9" r="2.6"/><path d="M15.5 14.2c2.8.3 5 2 5 4.8"/></svg>
+                </div>
+                <span class="gauge-label">Personel <span id="stat-staff-val" class="gauge-val">55</span></span>
+                <div class="stat-indicator" id="ind-staff"></div>
+            </div>
+            <div class="gauge" id="stat-customer-card">
+                <div class="gauge-tank">
+                    <div id="stat-customer-bar" class="gauge-fill" style="height: 55%"></div>
+                    <div class="gauge-edge top"></div><div class="gauge-edge bottom"></div>
+                    <svg class="gauge-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/></svg>
+                </div>
+                <span class="gauge-label">Müşteri <span id="stat-customer-val" class="gauge-val">55</span></span>
+                <div class="stat-indicator" id="ind-customer"></div>
+            </div>
+            <div class="gauge" id="stat-hq-card">
+                <div class="gauge-tank">
+                    <div id="stat-hq-bar" class="gauge-fill" style="height: 50%"></div>
+                    <div class="gauge-edge top"></div><div class="gauge-edge bottom"></div>
+                    <svg class="gauge-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5h4l-1 3h-2z"/><path d="M11 6.5l-2 8.5 3 5 3-5-2-8.5"/></svg>
+                </div>
+                <span class="gauge-label">Bölge <span id="stat-hq-val" class="gauge-val">50</span></span>
+                <div class="stat-indicator" id="ind-hq"></div>
+            </div>
+            <div class="gauge" id="stat-finance-card">
+                <div class="gauge-tank">
+                    <div id="stat-finance-bar" class="gauge-fill" style="height: 50%"></div>
+                    <div class="gauge-edge top"></div><div class="gauge-edge bottom"></div>
+                    <svg class="gauge-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="9" rx="1"/><path d="M6 11V5h8v6"/><path d="M8.5 8h3"/><path d="M7 15.5h2M11 15.5h2M15 15.5h2"/></svg>
+                </div>
+                <span class="gauge-label">Kasa <span id="stat-finance-val" class="gauge-val">50</span></span>
+                <div class="stat-indicator" id="ind-finance"></div>
+            </div>
+        </section>
+
+        <div id="target-alert-banner" class="note hidden">
+            <span class="note-from">Bölge'den not · bu ayın hedefi</span>
+            <p id="target-description" class="note-text"></p>
+        </div>
+
+        <div id="campaign-banner" class="campaign-banner hidden">
+            <span class="campaign-title" id="campaign-banner-title">Kampanya</span>
+            <span id="campaign-banner-desc" class="campaign-desc"></span>
+        </div>
+
+        <!-- Olay kartı: ekip grubuna düşen mesaj -->
+        <section class="event-card" id="event-card" aria-live="polite">
+            <div class="thread-meta">
+                <span class="rule"></span>
+                <span id="card-tag" class="mono">mağaza ekibi</span>
+                <span class="rule"></span>
+            </div>
+            <div class="message">
+                <div class="avatar" id="card-npc-avatar" aria-hidden="true">M</div>
+                <div class="message-main" id="card-npc-badge">
+                    <div class="message-from">
+                        <strong id="card-npc-name">Mağaza</strong>
+                        <span id="card-npc-title">—</span>
+                    </div>
+                    <div class="bubble">
+                        <h2 id="card-title" class="bubble-title">Yükleniyor…</h2>
+                        <p id="card-desc" class="bubble-text"></p>
                     </div>
                 </div>
+            </div>
+            <p class="reply-hint mono">Cevabın · <span class="hint-dot mag-1"></span> hafif <span class="hint-dot mag-2"></span> sert, yönü sen bul</p>
+            <div class="choices" id="choices-container"></div>
+        </section>
 
-                <div class="header-date-container">
-                    <div class="date-badge">
-                        <span class="date-label">Tarih</span>
-                        <span id="game-date" class="date-value">Yıl 1, Ay 1, Hafta 1</span>
-                    </div>
-                    <div class="age-badge">
-                        <span class="age-label">Hafta</span>
-                        <span id="game-age" class="age-value">1 / 48</span>
-                    </div>
-                    <div class="score-badge">
-                        <span class="score-label">En İyi Skor</span>
-                        <span id="high-score" class="score-value">0 Hafta</span>
-                    </div>
+        <section class="upgrades-widget hidden" id="upgrades-widget">
+            <span class="mono">Mağazada kurulu</span>
+            <div class="upgrade-tags" id="active-upgrades-list"></div>
+        </section>
+    </main>
+
+    <!-- ===================== GİRİŞ: ATAMA YAZISI ===================== -->
+    <div id="welcome-screen" class="sheet-overlay">
+        <div class="sheet">
+
+            <div id="menu-main" class="panel">
+                <div class="letterhead mono">
+                    <span>AVM Şubeleri Bölge Müdürlüğü</span>
+                    <span>Sayı: 2026/047</span>
                 </div>
-
-                <div class="header-controls">
-                    <button id="sound-toggle" class="control-btn btn-icon" title="Sesi Aç/Kapat">
-                        <i class="fas fa-volume-up"></i>
-                    </button>
-                    <button id="restart-btn" class="control-btn btn-icon" title="Yeniden Başlat">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                    <button id="home-btn" class="control-btn btn-icon" title="Giriş Ekranına Dön">
-                        <i class="fas fa-home"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Status Board (Stats Grid) -->
-            <section class="stats-board">
-                <!-- Personel Morali -->
-                <div class="stat-card glass-panel" id="stat-staff-card" data-stat="staff">
-                    <div class="stat-header">
-                        <div class="stat-icon-wrapper staff-color">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <span class="stat-name">Personel Morali</span>
-                        <span id="stat-staff-val" class="stat-percentage">50%</span>
-                    </div>
-                    <div class="stat-bar-container">
-                        <div id="stat-staff-bar" class="stat-bar staff-color" style="width: 50%"></div>
-                    </div>
-                    <div class="stat-indicator" id="ind-staff"></div>
-                </div>
-
-                <!-- Müşteri Deneyimi -->
-                <div class="stat-card glass-panel" id="stat-customer-card" data-stat="customer">
-                    <div class="stat-header">
-                        <div class="stat-icon-wrapper customer-color">
-                            <i class="fas fa-face-smile-beam"></i>
-                        </div>
-                        <span class="stat-name">Müşteri Deneyimi</span>
-                        <span id="stat-customer-val" class="stat-percentage">50%</span>
-                    </div>
-                    <div class="stat-bar-container">
-                        <div id="stat-customer-bar" class="stat-bar customer-color" style="width: 50%"></div>
-                    </div>
-                    <div class="stat-indicator" id="ind-customer"></div>
-                </div>
-
-                <!-- Bölge Mutluluk -->
-                <div class="stat-card glass-panel" id="stat-hq-card" data-stat="hq">
-                    <div class="stat-header">
-                        <div class="stat-icon-wrapper hq-color">
-                            <i class="fas fa-map-location-dot"></i>
-                        </div>
-                        <span class="stat-name">Bölge Mutluluk</span>
-                        <span id="stat-hq-val" class="stat-percentage">50%</span>
-                    </div>
-                    <div class="stat-bar-container">
-                        <div id="stat-hq-bar" class="stat-bar hq-color" style="width: 50%"></div>
-                    </div>
-                    <div class="stat-indicator" id="ind-hq"></div>
-                </div>
-
-                <!-- Kasa Bütçesi -->
-                <div class="stat-card glass-panel" id="stat-finance-card" data-stat="finance">
-                    <div class="stat-header">
-                        <div class="stat-icon-wrapper finance-color">
-                            <i class="fas fa-vault"></i>
-                        </div>
-                        <span class="stat-name">Kasa Bütçesi</span>
-                        <span id="stat-finance-val" class="stat-percentage">50%</span>
-                    </div>
-                    <div class="stat-bar-container">
-                        <div id="stat-finance-bar" class="stat-bar finance-color" style="width: 50%"></div>
-                    </div>
-                    <div class="stat-indicator" id="ind-finance"></div>
-                </div>
-            </section>
-
-            <!-- Main Play Area -->
-            <section class="game-play-area">
-                <!-- Monthly Target Alert Banner -->
-                <div id="target-alert-banner" class="target-banner glass-panel hidden">
-                    <i class="fas fa-bullseye target-icon"></i>
-                    <div class="target-text-wrapper">
-                        <span class="target-title">Aylık Hedef:</span>
-                        <span id="target-description" class="target-text">Satış hedefini yakala ve bütçeyi koru!</span>
-                    </div>
-                </div>
-
-                <!-- Active Campaign Alert Banner -->
-                <div id="campaign-banner" class="campaign-banner glass-panel hidden">
-                    <span class="campaign-icon">⚡</span>
-                    <div class="campaign-text-wrapper">
-                        <span class="campaign-title" id="campaign-banner-title">KAMPANYA AKTİF</span>
-                        <span id="campaign-banner-desc" class="campaign-desc-text">İndirim haftaları!</span>
-                    </div>
-                </div>
-
-                <!-- Scenario Card -->
-                <div id="event-card-container" class="card-container">
-                    <div id="event-card" class="event-card glass-panel">
-                        <div class="card-inner">
-                            <!-- Character Speaking Info (NPC Badge) -->
-                            <div id="card-npc-badge" class="card-npc-badge hidden">
-                                <span id="card-npc-emoji" class="npc-emoji">👔</span>
-                                <div class="npc-info">
-                                    <span id="card-npc-name" class="npc-name">Batıkan Bey</span>
-                                    <span id="card-npc-title" class="npc-title">Bölge Müdürü</span>
-                                </div>
-                            </div>
-                            <div class="card-category" id="card-tag">GÜNLÜK OPERASYON</div>
-                            <div class="card-graphic-wrapper" id="card-graphic">
-                                <span class="graphic-emoji">✨</span>
-                            </div>
-                            <h2 class="card-title" id="card-title">Yükleniyor...</h2>
-                            <p class="card-desc" id="card-desc">Lütfen bekleyin, Aura Store kapılarını açıyor.</p>
-                            
-                            <div class="choices-container" id="choices-container">
-                                <!-- Dinamik seçenekler JS tarafında buraya eklenecek -->
-                            </div>
+                <h1 class="hero-title">Anne, ben müdür oldum.</h1>
+                <div class="letter">
+                    <p class="mono letter-subject">Konu: Mağaza müdürü ataması</p>
+                    <p>Bir AVM'deki teknoloji mağazamıza müdür olarak atanmanız uygun görülmüştür. Ekibe, müşteriye, bölgeye ve kasaya karşı bir yıl boyunca sorumlusunuz.</p>
+                    <p>Bunlardan birini sıfırlarsanız da, fazla şımartırsanız da görevinize son verilir.</p>
+                    <div class="signature">
+                        <div class="stamp" aria-hidden="true"><span>BÖLGE</span><strong>ATANDI</strong><span>2026</span></div>
+                        <div class="signer">
+                            <span class="signer-hand">B. Aksoy</span>
+                            <span class="signer-name">Batıkan Aksoy, Bölge Müdürü</span>
                         </div>
                     </div>
                 </div>
-            </section>
+                <button id="start-game-btn" class="btn-primary" type="button">İşe başla</button>
+                <nav class="text-links" aria-label="Menü">
+                    <button id="rules-btn" type="button">Nasıl oynanır</button>
+                    <button id="leaderboard-btn" type="button">Sıralama</button>
+                    <button id="achievements-btn" type="button">Rozetler</button>
+                    <button id="talents-btn" type="button">Yetenekler</button>
+                </nav>
+            </div>
 
-            <!-- Active Upgrades Widget -->
-            <section class="upgrades-widget glass-panel hidden" id="upgrades-widget">
-                <h3>Aktif Mağaza Geliştirmeleri</h3>
-                <div class="upgrades-list" id="active-upgrades-list">
-                    <!-- Dynamic upgrades inserted here -->
+            <div id="menu-setup" class="panel hidden">
+                <div class="letterhead mono">
+                    <span>Atama formu</span>
+                    <span>Sayfa 2/2</span>
                 </div>
-            </section>
-        </main>
+                <div class="letter">
+                    <label for="setup-name" class="name-line">
+                        <span>Sayın</span>
+                        <input type="text" id="setup-name" placeholder="adın" maxlength="20" autocomplete="off">
+                    </label>
+                    <div class="name-tools">
+                        <span id="setup-name-error" class="field-error hidden">Atama yazısına bir isim lazım.</span>
+                        <button id="setup-random-name-btn" type="button" class="link-btn">Rastgele isim</button>
+                    </div>
 
-        <!-- Welcome / Start Screen Overlay -->
-        <div id="welcome-screen" class="modal-overlay">
-            <!-- Main Menu Card -->
-            <div class="menu-container glass-panel animated-modal" id="menu-main">
-                <div class="menu-logo-wrapper">
-                    <span class="menu-logo-emoji">✨</span>
-                    <h1 class="menu-title">Aura Store Müdürü</h1>
-                    <p class="menu-subtitle">Premium Mağaza Yönetim Simülasyonu</p>
+                    <fieldset class="choice-list">
+                        <legend class="mono">Şube</legend>
+                        <label><input type="radio" name="store-type" value="new_store" checked><span><strong>Yeni açılan şube</strong><small>Ekip hevesli, moral kaybı az. Tecrübesizlik müşteri ve kasada pahalıya patlar.</small></span></label>
+                        <label><input type="radio" name="store-type" value="old_store"><span><strong>Köklü şube</strong><small>Ekip usta, moral kaybı az. Müşteri huysuz, kayıplar büyük.</small></span></label>
+                        <label><input type="radio" name="store-type" value="near_hq"><span><strong>Merkeze yakın şube</strong><small>Ciro yüksek, kasa hızlı dolar. Gözler üstünde, Bölge çabuk bozulur.</small></span></label>
+                    </fieldset>
+
+                    <fieldset class="segmented">
+                        <legend class="mono">Zorluk</legend>
+                        <label><input type="radio" name="difficulty" value="easy"><span>Kolay</span></label>
+                        <label><input type="radio" name="difficulty" value="normal" checked><span>Normal</span></label>
+                        <label><input type="radio" name="difficulty" value="hard"><span>Zor</span></label>
+                    </fieldset>
+                    <p class="fine-print">Kolay: yön okları görünür. Normal: sadece hafif/sert noktalar. Zor: sadece hangi barların etkileneceği.</p>
                 </div>
-                
-                <div class="menu-buttons">
-                    <button id="start-game-btn" class="action-btn menu-btn">
-                        <i class="fas fa-play"></i> <span>Oyunu Başlat</span>
-                    </button>
-                    <button id="rules-btn" class="action-btn menu-btn">
-                        <i class="fas fa-book-open"></i> <span>Nasıl Oynanır?</span>
-                    </button>
-                    <button id="leaderboard-btn" class="action-btn menu-btn">
-                        <i class="fas fa-trophy"></i> <span>Liderlik Sıralaması</span>
-                    </button>
-                    <button id="achievements-btn" class="action-btn menu-btn">
-                        <i class="fas fa-award"></i> <span>Başarımlar</span>
-                    </button>
-                    <button id="talents-btn" class="action-btn menu-btn">
-                        <i class="fas fa-tree"></i> <span>Yetenek Ağacı</span>
-                    </button>
+                <div class="btn-row">
+                    <button id="setup-back-btn" class="btn-secondary" type="button">Geri</button>
+                    <button id="setup-start-btn" class="btn-primary" type="button">Atamayı kabul et</button>
                 </div>
             </div>
 
-            <!-- Store Setup Panel -->
-            <div class="menu-container glass-panel animated-modal hidden" id="menu-setup">
-                <div class="menu-header">
-                    <h2>⚙️ Mağaza Yapılandırması</h2>
-                </div>
-                <div class="menu-scroll-body form-body">
-                    <!-- Manager Name -->
-                    <div class="form-group name-group-wrapper">
-                        <label for="setup-name" class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Müdür Adı</span>
-                            <span class="required-badge">* Zorunlu</span>
-                        </label>
-                        <div class="name-input-container" style="display: flex; gap: 8px;">
-                            <input type="text" id="setup-name" class="setup-input" placeholder="Adınızı yazın veya rastgele seçin..." maxlength="20" style="flex: 1;">
-                            <button type="button" id="setup-random-name-btn" class="random-name-btn" style="width: auto; padding: 12px 16px; margin: 0; display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 0.9rem;">
-                                🎲 Rastgele İsim
-                            </button>
-                        </div>
-                        <span id="setup-name-error" class="input-error-msg hidden" style="color: var(--color-danger); font-size: 0.8rem; margin-top: 6px; display: block; font-weight: 500;">⚠️ Lütfen bir müdür adı girin veya Rastgele İsim butonunu kullanın!</span>
-                    </div>
-
-                    <!-- Store Scenario Selection -->
-                    <div class="form-group">
-                        <label class="form-label">Mağaza Profili</label>
-                        <div class="store-cards-grid">
-                            <!-- New Store -->
-                            <label class="store-card-option">
-                                <input type="radio" name="store-type" value="new_store" checked>
-                                <div class="store-card-content">
-                                    <div class="store-card-header">
-                                        <i class="fas fa-wand-magic-sparkles store-icon"></i>
-                                        <span>Yeni Açılan Mağaza</span>
-                                    </div>
-                                    <div class="store-card-perks">
-                                        <div class="perk-pro"><i class="fas fa-plus-circle"></i> Personel morali %20 yavaş düşer (Satış heveslisi).</div>
-                                        <div class="perk-con"><i class="fas fa-minus-circle"></i> Deneyimsiz personel; Kasa/Müşteri hata kayıpları %20 artar.</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- Old Store -->
-                            <label class="store-card-option">
-                                <input type="radio" name="store-type" value="old_store">
-                                <div class="store-card-content">
-                                    <div class="store-card-header">
-                                        <i class="fas fa-landmark store-icon"></i>
-                                        <span>Köklü Mağaza</span>
-                                    </div>
-                                    <div class="store-card-perks">
-                                        <div class="perk-pro"><i class="fas fa-plus-circle"></i> Tecrübeli personel; Personel moral kayıpları %20 azalır.</div>
-                                        <div class="perk-con"><i class="fas fa-minus-circle"></i> Bina eski ve müşteriler titiz; Müşteri kayıp oranları %20 artar.</div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- HQ/Boss Near -->
-                            <label class="store-card-option">
-                                <input type="radio" name="store-type" value="near_hq">
-                                <div class="store-card-content">
-                                    <div class="store-card-header">
-                                        <i class="fas fa-glasses store-icon"></i>
-                                        <span>Yönetime Yakın Mağaza</span>
-                                    </div>
-                                    <div class="store-card-perks">
-                                        <div class="perk-pro"><i class="fas fa-plus-circle"></i> Zengin muhit; Kasa gelir kazançları %20 artar.</div>
-                                        <div class="perk-con"><i class="fas fa-minus-circle"></i> Sürekli gözetim; Bölge mutluluk kayıpları %20 artar.</div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Difficulty Selection -->
-                    <div class="form-group">
-                        <label class="form-label">Zorluk Seviyesi</label>
-                        <div class="difficulty-selector">
-                            <label class="diff-btn">
-                                <input type="radio" name="difficulty" value="easy">
-                                <span>Kolay</span>
-                            </label>
-                            <label class="diff-btn">
-                                <input type="radio" name="difficulty" value="normal" checked>
-                                <span>Normal</span>
-                            </label>
-                            <label class="diff-btn">
-                                <input type="radio" name="difficulty" value="hard">
-                                <span>Zor</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="setup-actions">
-                    <button id="setup-back-btn" class="action-btn menu-btn">
-                        <i class="fas fa-arrow-left"></i> Geri Dön
-                    </button>
-                    <button id="setup-start-btn" class="action-btn menu-btn primary-btn">
-                        <i class="fas fa-check"></i> Simülasyonu Başlat
-                    </button>
-                </div>
-            </div>
-
-            <!-- Rules Sub-Panel -->
-            <div class="menu-container glass-panel animated-modal hidden" id="menu-rules">
-                <div class="menu-header">
-                    <h2>📖 Nasıl Oynanır?</h2>
-                </div>
-                <div class="menu-scroll-body">
+            <div id="menu-rules" class="panel hidden">
+                <h2 class="panel-title">Nasıl oynanır</h2>
+                <div class="letter prose">
                     <p>Bir AVM'deki teknoloji mağazasına müdür olarak atandın. Görevin bir yıl (48 hafta) boyunca mağazayı ayakta tutmak.</p>
-                    <hr class="menu-divider" />
-                    <h3>📊 Dört Bar, İki Uç</h3>
-                    <ul class="menu-rules-list">
-                        <li><i class="fas fa-users staff-color"></i> <strong>Personel:</strong> Sıfırlanırsa ekip istifa eder. Tavana vurursa ekip şımarır, düzen kalmaz.</li>
-                        <li><i class="fas fa-face-smile-beam customer-color"></i> <strong>Müşteri:</strong> Sıfırlanırsa boykot başlar. Tavana vurursa her şeye evet demişsindir, kâr kalmaz.</li>
-                        <li><i class="fas fa-map-location-dot hq-color"></i> <strong>Bölge:</strong> Sıfırlanırsa kovulursun. Tavana vurursa terfi edersin, ama sadece 6. aydan sonra ve diğer barlar %40'ın üstündeyse. Yoksa merkez ofise tayin edilirsin.</li>
-                        <li><i class="fas fa-vault finance-color"></i> <strong>Kasa:</strong> Sıfırlanırsa iflas. Tavana vurursa hiç yatırım yapmamışsın demektir, denetime alınırsın.</li>
+                    <h3>Dört bar, iki uç</h3>
+                    <ul>
+                        <li><strong>Personel:</strong> Sıfırlanırsa ekip istifa eder. Tavana vurursa ekip şımarır, düzen kalmaz.</li>
+                        <li><strong>Müşteri:</strong> Sıfırlanırsa boykot başlar. Tavana vurursa her şeye evet demişsindir, kâr kalmaz.</li>
+                        <li><strong>Bölge:</strong> Sıfırlanırsa kovulursun. Tavana vurursa terfi edersin, ama sadece 6. aydan sonra ve diğer barlar %40'ın üstündeyse. Yoksa merkez ofise tayin edilirsin.</li>
+                        <li><strong>Kasa:</strong> Sıfırlanırsa iflas. Tavana vurursa hiç yatırım yapmamışsın demektir, denetime alınırsın.</li>
                     </ul>
-                    <hr class="menu-divider" />
-                    <h3>🎯 İpuçları</h3>
-                    <p>Seçeneklerin altında hangi barın ne kadar oynayacağı görünür: küçük nokta <strong>hafif</strong>, büyük nokta <strong>sert</strong>. Yönünü hikâyeden sen çıkarırsın. Kolay modda yön okları da görünür, Zor modda sadece hangi barların etkileneceği görünür.</p>
+                    <h3>İpuçları</h3>
+                    <p>Cevapların altında hangi barın ne kadar oynayacağı görünür: küçük nokta hafif, büyük nokta sert. Yönünü hikâyeden sen çıkarırsın.</p>
                     <p>Kira ve maaşlar yüzünden kasa zaman zaman kendiliğinden erir. Her ay Bölge sana hedef verir; tutarsa Bölge memnun olur ve prim gelir, kaçarsa Bölge'den puan gider.</p>
-                    <p>Ay sonunda kasanın durumuna göre <strong>geliştirme bütçesi</strong> (₺) gelir. Ayda bir geliştirme alabilirsin; bazılarının aylık bakım gideri vardır.</p>
+                    <p>Ay sonunda kasanın durumuna göre geliştirme bütçesi (₺) gelir. Ayda bir geliştirme alabilirsin; bazılarının aylık bakım gideri vardır.</p>
                 </div>
-                <button id="rules-back-btn" class="action-btn menu-btn">
-                    <i class="fas fa-arrow-left"></i> Geri Dön
-                </button>
+                <button id="rules-back-btn" class="btn-secondary" type="button">Geri</button>
             </div>
 
-            <!-- Leaderboard Sub-Panel -->
-            <div class="menu-container glass-panel animated-modal hidden" id="menu-leaderboard-panel">
-                <div class="menu-header">
-                    <h2>🏆 En İyi Skorlar (Liderlik Tablosu)</h2>
-                </div>
-                <div class="menu-scroll-body">
-                    <ol class="leaderboard-list" id="menu-leaderboard-list">
-                        <!-- Dynamic scores will be inserted here -->
-                    </ol>
-                </div>
-                <button id="leaderboard-back-btn" class="action-btn menu-btn">
-                    <i class="fas fa-arrow-left"></i> Geri Dön
-                </button>
+            <div id="menu-leaderboard-panel" class="panel hidden">
+                <h2 class="panel-title">Sıralama</h2>
+                <ol class="leaderboard-list" id="menu-leaderboard-list"></ol>
+                <button id="leaderboard-back-btn" class="btn-secondary" type="button">Geri</button>
             </div>
 
-            <!-- Achievements Sub-Panel -->
-            <div class="menu-container glass-panel animated-modal hidden" id="menu-achievements-panel">
-                <div class="menu-header">
-                    <h2>🏆 Kazanılan Başarımlar</h2>
-                </div>
-                <div class="menu-scroll-body form-body">
-                    <div class="achievements-grid" id="achievements-list">
-                        <!-- Dynamic achievements will be inserted here -->
-                    </div>
-                </div>
-                <button id="achievements-back-btn" class="action-btn menu-btn">
-                    <i class="fas fa-arrow-left"></i> Geri Dön
-                </button>
+            <div id="menu-achievements-panel" class="panel hidden">
+                <h2 class="panel-title">Rozetler</h2>
+                <p class="fine-print">Her rozet bir yetenek puanı kazandırır.</p>
+                <div class="stack-list" id="achievements-list"></div>
+                <button id="achievements-back-btn" class="btn-secondary" type="button">Geri</button>
             </div>
 
-            <!-- Talents Sub-Panel -->
-            <div class="menu-container glass-panel animated-modal hidden" id="menu-talents-panel">
-                <div class="menu-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <h2>🌳 Yetenek Ağacı & Gelişim</h2>
-                    <div class="talent-points-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem;">
-                        ✨ Yetenek Puanı: <span id="talent-points-count">0</span>
-                    </div>
+            <div id="menu-talents-panel" class="panel hidden">
+                <h2 class="panel-title">Yetenekler</h2>
+                <p class="fine-print">Rozetlerden ve her 10 haftadan puan kazanırsın. Yetenekler puana eklenmez, sadece işini kolaylaştırır.</p>
+                <div class="points-line"><span class="mono">Puanın</span><strong id="talent-points-count">0</strong></div>
+                <div class="stack-list" id="talents-list"></div>
+                <div class="btn-row">
+                    <button id="talents-reset-btn" class="btn-secondary" type="button">Puanları geri al</button>
+                    <button id="talents-back-btn" class="btn-primary" type="button">Tamam</button>
                 </div>
-                <div class="menu-scroll-body form-body">
-                    <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">
-                        Başarımları açarak veya hayatta kaldığınız her 10 hafta için yetenek puanı kazanırsınız. Yetenekler kariyeriniz boyunca (tüm oyunlarda) kalıcıdır!
-                    </p>
-                    <div class="talents-grid" id="talents-list">
-                        <!-- Dynamic talents will be inserted here -->
-                    </div>
-                </div>
-                <div class="talents-footer-btns" style="display: flex; gap: 8px; width: 100%; margin-top: 10px;">
-                    <button id="talents-reset-btn" class="action-btn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--color-danger); flex: 1;">
-                        <i class="fas fa-undo"></i> Sıfırla
-                    </button>
-                    <button id="talents-back-btn" class="action-btn menu-btn" style="flex: 2; margin: 0;">
-                        <i class="fas fa-arrow-left"></i> Geri Dön
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Monthly Report / Shop Modal -->
-        <div id="monthly-modal" class="modal-overlay hidden">
-            <div class="modal-content glass-panel animated-modal">
-                <div class="modal-header">
-                    <h2>📊 Aylık Rapor & Geliştirme</h2>
-                    <span class="month-title" id="modal-month-name">1. Ay Sonu Raporu</span>
-                </div>
-                
-                <div class="modal-body">
-                    <!-- Current Store Stats -->
-                    <div class="report-section current-stats-report">
-                        <h3>Mağaza Durum Göstergeleri</h3>
-                        <div class="mini-stats-grid">
-                            <div class="mini-stat-item" data-stat="staff">
-                                <span class="mini-stat-label"><i class="fas fa-users staff-color"></i> Personel Morali</span>
-                                <div class="mini-bar-container">
-                                    <div id="modal-stat-staff-bar" class="mini-stat-bar staff-color" style="width: 50%"></div>
-                                </div>
-                                <span id="modal-stat-staff-val" class="mini-stat-val">50%</span>
-                            </div>
-                            <div class="mini-stat-item" data-stat="customer">
-                                <span class="mini-stat-label"><i class="fas fa-face-smile-beam customer-color"></i> Müşteri Deneyimi</span>
-                                <div class="mini-bar-container">
-                                    <div id="modal-stat-customer-bar" class="mini-stat-bar customer-color" style="width: 50%"></div>
-                                </div>
-                                <span id="modal-stat-customer-val" class="mini-stat-val">50%</span>
-                            </div>
-                            <div class="mini-stat-item" data-stat="hq">
-                                <span class="mini-stat-label"><i class="fas fa-map-location-dot hq-color"></i> Bölge Mutluluğu</span>
-                                <div class="mini-bar-container">
-                                    <div id="modal-stat-hq-bar" class="mini-stat-bar hq-color" style="width: 50%"></div>
-                                </div>
-                                <span id="modal-stat-hq-val" class="mini-stat-val">50%</span>
-                            </div>
-                            <div class="mini-stat-item" data-stat="finance">
-                                <span class="mini-stat-label"><i class="fas fa-coins finance-color"></i> Kasa Bütçesi</span>
-                                <div class="mini-bar-container">
-                                    <div id="modal-stat-finance-bar" class="mini-stat-bar finance-color" style="width: 50%"></div>
-                                </div>
-                                <span id="modal-stat-finance-val" class="mini-stat-val">50%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Goal Status -->
-                    <div class="report-section goals-report">
-                        <h3>Aylık Hedef Kontrolü</h3>
-                        <div id="goal-status-box" class="goal-status-box success">
-                            <div class="goal-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="goal-report-details">
-                                <h4 id="goal-status-title">Hedef Başarıyla Tamamlandı!</h4>
-                                <p id="goal-status-desc">Müşteri deneyimini korudunuz. Bölge yönetimi size bütçe aktardı!</p>
-                            </div>
-                            <div class="goal-reward" id="goal-reward-val">+15% Bölge</div>
-                        </div>
-                    </div>
-
-                    <!-- Upgrades Shop -->
-                    <div class="report-section shop-section">
-                        <div class="shop-header">
-                            <h3>🛒 Aura Geliştirme Pazarı</h3>
-                            <div class="budget-tracker">
-                                <span>Geliştirme bütçesi:</span>
-                                <span id="shop-budget-val" class="shop-budget">₺0</span>
-                            </div>
-                        </div>
-                        <p class="shop-info">Her ay kasanın durumuna göre bütçe gelir; tutan her hedef ayrıca prim getirir. Ayda en fazla bir geliştirme alabilirsin. Bakım giderleri bütçeden düşer, bütçe yetmezse fark kasadan çıkar.</p>
-                        
-                        <div class="shop-items-grid" id="shop-items-list">
-                            <!-- Dynamic shop items -->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button id="next-month-btn" class="action-btn">
-                        <span>Yeni Aya Başla</span> <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Retirement Screen Overlay (Victory) -->
-        <div id="retirement-screen" class="modal-overlay hidden">
-            <div class="gameover-content glass-panel text-center retirement-theme">
-                <div class="gameover-icon">
-                    <i class="fas fa-award" style="color:#f59e0b; font-size:3.5rem; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));"></i>
-                </div>
-                <h1 class="retirement-title" id="retirement-title">Bir Yıl Tamam!</h1>
-                <p id="retirement-reason" class="retirement-reason">Bir yılı görevden alınmadan bitirdin.</p>
-                
-                <div class="gameover-stats-grid">
-                    <div class="gameover-stat-box">
-                        <span class="label">Toplam Süre</span>
-                        <span id="retirement-tenure" class="value">0 Hafta</span>
-                    </div>
-                    <div class="gameover-stat-box">
-                        <span class="label">Mağazaya Yatırım</span>
-                        <span id="retirement-age" class="value">0 geliştirme</span>
-                    </div>
-                    <div class="gameover-stat-box gold-stat-box">
-                        <span class="label">Kazanılan Skor</span>
-                        <span id="retirement-earned-score" class="value">0 Puan</span>
-                    </div>
-                    <div class="gameover-stat-box">
-                        <span class="label">En İyi Skor</span>
-                        <span id="retirement-best" class="value">0 Puan</span>
-                    </div>
-                </div>
-
-                <!-- Retirement Progression Chart -->
-                <div class="gameover-chart-section">
-                    <h3>📈 Kariyer Boyu Mağaza Durumu</h3>
-                    <div id="retirement-chart-container" class="gameover-chart-container" style="margin: 15px auto; max-width: 500px; height: 180px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; position: relative;">
-                        <!-- Dynamic SVG will be rendered here -->
-                    </div>
-                    <div class="chart-legend" style="display: flex; justify-content: center; gap: 16px; margin-top: 8px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">
-                        <span style="color: var(--color-staff);"><i class="fas fa-circle"></i> Personel</span>
-                        <span style="color: var(--color-customer);"><i class="fas fa-circle"></i> Müşteri</span>
-                        <span style="color: var(--color-hq);"><i class="fas fa-circle"></i> Genel Merkez</span>
-                        <span style="color: var(--color-finance);"><i class="fas fa-circle"></i> Finans</span>
-                    </div>
-                </div>
-
-                <!-- High Score Leaderboard -->
-                <div class="leaderboard-section">
-                    <h3>🏆 En İyi Skorlar (Liderlik Tablosu)</h3>
-                    <ol class="leaderboard-list" id="retirement-leaderboard-list">
-                        <!-- Dynamic scores -->
-                    </ol>
-                </div>
-
-                <button id="retirement-play-again-btn" class="action-btn primary-btn gold-btn">
-                    <i class="fas fa-play"></i> Yeni Kariyer Başlat
-                </button>
-            </div>
-        </div>
-
-        <!-- Game Over Screen Overlay -->
-        <div id="gameover-screen" class="modal-overlay hidden">
-            <div class="gameover-content glass-panel text-center">
-                <div class="gameover-icon">
-                    <i class="fas fa-circle-exclamation" style="color:var(--color-danger); font-size:3.5rem;"></i>
-                </div>
-                <h1 class="gameover-title" id="gameover-title">Görevden Alındın</h1>
-                <p id="gameover-reason" class="gameover-reason">Personel ekibiniz istifa etti.</p>
-                
-                <div class="gameover-stats-grid">
-                    <div class="gameover-stat-box">
-                        <span class="label">Süre</span>
-                        <span id="gameover-tenure" class="value">0 Hafta</span>
-                    </div>
-                    <div class="gameover-stat-box">
-                        <span class="label">Ulaşılan Ay</span>
-                        <span id="gameover-months" class="value">0 Ay</span>
-                    </div>
-                    <div class="gameover-stat-box gold-stat-box">
-                        <span class="label">Kazanılan Skor</span>
-                        <span id="gameover-earned-score" class="value">0 Puan</span>
-                    </div>
-                    <div class="gameover-stat-box">
-                        <span class="label">En İyi Skor</span>
-                        <span id="gameover-best" class="value">0 Puan</span>
-                    </div>
-                </div>
-
-                <!-- Game Over Progression Chart -->
-                <div class="gameover-chart-section">
-                    <h3>📈 Hafta Hafta Mağaza Durumu</h3>
-                    <div id="gameover-chart-container" class="gameover-chart-container" style="margin: 15px auto; max-width: 500px; height: 180px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; position: relative;">
-                        <!-- Dynamic SVG will be rendered here -->
-                    </div>
-                    <div class="chart-legend" style="display: flex; justify-content: center; gap: 16px; margin-top: 8px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">
-                        <span style="color: var(--color-staff);"><i class="fas fa-circle"></i> Personel</span>
-                        <span style="color: var(--color-customer);"><i class="fas fa-circle"></i> Müşteri</span>
-                        <span style="color: var(--color-hq);"><i class="fas fa-circle"></i> Genel Merkez</span>
-                        <span style="color: var(--color-finance);"><i class="fas fa-circle"></i> Finans</span>
-                    </div>
-                </div>
-
-                <!-- High Score Leaderboard -->
-                <div class="leaderboard-section">
-                    <h3>🏆 En İyi Skorlar (Liderlik Tablosu)</h3>
-                    <ol class="leaderboard-list" id="leaderboard-list">
-                        <!-- Dynamic scores -->
-                    </ol>
-                </div>
-
-                <button id="play-again-btn" class="action-btn primary-btn">
-                    <i class="fas fa-play"></i> Yeniden Dene
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Script Entry Point -->
-    <script type="module" src="/src/main.js"></script>
+    <!-- ===================== AY SONU FİŞİ ===================== -->
+    <div id="monthly-modal" class="sheet-overlay counter hidden">
+        <div class="sheet">
+            <div class="receipt">
+                <div class="receipt-head">
+                    <h2 id="modal-month-name" class="receipt-title">Ay sonu raporu</h2>
+                    <span class="mono">ŞUBE 047</span>
+                </div>
+                <div class="receipt-cut"></div>
+
+                <div class="receipt-stats">
+                    <div class="receipt-row"><span>Personel</span><span class="mini-bar"><span id="modal-stat-staff-bar"></span></span><span id="modal-stat-staff-val">0</span></div>
+                    <div class="receipt-row"><span>Müşteri</span><span class="mini-bar"><span id="modal-stat-customer-bar"></span></span><span id="modal-stat-customer-val">0</span></div>
+                    <div class="receipt-row"><span>Bölge</span><span class="mini-bar"><span id="modal-stat-hq-bar"></span></span><span id="modal-stat-hq-val">0</span></div>
+                    <div class="receipt-row"><span>Kasa</span><span class="mini-bar"><span id="modal-stat-finance-bar"></span></span><span id="modal-stat-finance-val">0</span></div>
+                </div>
+                <div class="receipt-cut"></div>
+
+                <div id="goal-status-box" class="goal-status-box">
+                    <div class="receipt-row strong">
+                        <span id="goal-status-title">Hedefler</span>
+                        <span id="goal-reward-val"></span>
+                    </div>
+                    <div id="goal-status-desc"></div>
+                </div>
+                <div class="receipt-cut"></div>
+                <div class="receipt-row total"><span>Geliştirme bütçesi</span><span id="shop-budget-val">₺0</span></div>
+            </div>
+
+            <div class="coupons">
+                <span class="mono coupons-title">AVM'den bu ayın teklifleri · biri seçilebilir</span>
+                <div id="shop-items-list" class="coupon-list"></div>
+            </div>
+
+            <button id="next-month-btn" class="btn-primary" type="button">Yeni aya geç</button>
+        </div>
+    </div>
+
+    <!-- ===================== SON: BAŞARI ===================== -->
+    <div id="retirement-screen" class="sheet-overlay hidden">
+        <div class="sheet">
+            <div class="letter ending">
+                <div class="stamp stamp-good" aria-hidden="true"><span>BÖLGE</span><strong>TEBRİKLER</strong><span>2026</span></div>
+                <h1 class="hero-title small" id="retirement-title">Bir yıl tamam!</h1>
+                <p id="retirement-reason" class="ending-text"></p>
+                <dl class="ending-stats">
+                    <div><dt>Görev süresi</dt><dd id="retirement-tenure">0 Hafta</dd></div>
+                    <div><dt>Mağazaya yatırım</dt><dd id="retirement-age">0 geliştirme</dd></div>
+                    <div><dt>Puan</dt><dd id="retirement-earned-score">0 Puan</dd></div>
+                    <div><dt>Rekorun</dt><dd id="retirement-best">0 Puan</dd></div>
+                </dl>
+                <h3 class="mono section-label">Hafta hafta mağaza</h3>
+                <div id="retirement-chart-container" class="chart"></div>
+                <div class="chart-legend mono"><span class="k-staff">Personel</span><span class="k-customer">Müşteri</span><span class="k-hq">Bölge</span><span class="k-finance">Kasa</span></div>
+                <h3 class="mono section-label">Sıralama</h3>
+                <ol class="leaderboard-list" id="retirement-leaderboard-list"></ol>
+            </div>
+            <button id="retirement-play-again-btn" class="btn-primary" type="button">Yeniden atan</button>
+        </div>
+    </div>
+
+    <!-- ===================== SON: GÖREVDEN ALINMA ===================== -->
+    <div id="gameover-screen" class="sheet-overlay hidden">
+        <div class="sheet">
+            <div class="letter ending">
+                <div class="stamp" aria-hidden="true"><span>BÖLGE</span><strong>İPTAL</strong><span>2026</span></div>
+                <p class="mono letter-subject">Konu: Görevden alma</p>
+                <h1 class="hero-title small" id="gameover-title">Görevden alındın</h1>
+                <p id="gameover-reason" class="ending-text"></p>
+                <dl class="ending-stats">
+                    <div><dt>Dayandığın</dt><dd id="gameover-tenure">0 Hafta</dd></div>
+                    <div><dt>Tamamlanan ay</dt><dd id="gameover-months">0 Ay</dd></div>
+                    <div><dt>Puan</dt><dd id="gameover-earned-score">0 Puan</dd></div>
+                    <div><dt>Rekorun</dt><dd id="gameover-best">0 Puan</dd></div>
+                </dl>
+                <h3 class="mono section-label">Hafta hafta mağaza</h3>
+                <div id="gameover-chart-container" class="chart"></div>
+                <div class="chart-legend mono"><span class="k-staff">Personel</span><span class="k-customer">Müşteri</span><span class="k-hq">Bölge</span><span class="k-finance">Kasa</span></div>
+                <h3 class="mono section-label">Sıralama</h3>
+                <ol class="leaderboard-list" id="leaderboard-list"></ol>
+            </div>
+            <button id="play-again-btn" class="btn-primary" type="button">Başka şubeye başvur</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>

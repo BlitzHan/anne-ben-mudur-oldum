@@ -51,6 +51,9 @@ function isValidScoreEntry(entry) {
 
 const formatTl = (n) => `₺${n.toLocaleString('tr-TR')}`;
 
+const ICON_SOUND_ON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+const ICON_SOUND_OFF = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>';
+
 // ==========================================================================
 // UI STATE (oyun kuralları engine.js'te; burada sadece ekran ve kalıcı veri)
 // ==========================================================================
@@ -72,15 +75,15 @@ const ui = {
 // Achievements Database. İki uç da öldürdüğü için "%100" rozetleri %90'a çekildi;
 // id'ler aynı kaldı ki eski kayıtlar korunsun.
 const ACHIEVEMENTS = [
-    { id: 'first_month', title: 'İlk Ayı Devirdik', desc: 'Müdürlükte 4 haftayı geride bırak.', emoji: '📅' },
-    { id: 'clutch', title: 'Kriz Yönetmeni', desc: 'Herhangi bir barın %10\'un altına düştüğü bir haftayı atlat.', emoji: '🛡️' },
-    { id: 'capitalist', title: 'Kasa Dolu', desc: 'Kasayı %90 ve üstüne çıkar, taşırmadan.', emoji: '💰' },
-    { id: 'union', title: 'Ekip Seni Seviyor', desc: 'Personel moralini %90 ve üstüne çıkar, şımartmadan.', emoji: '🤝' },
-    { id: 'hq_fave', title: 'Bölge Müdürünün Sağ Kolu', desc: 'Bölge memnuniyetini %90 ve üstüne çıkar.', emoji: '👔' },
-    { id: 'customer_champion', title: 'Tüketici Dostu', desc: 'Müşteri deneyimini %90 ve üstüne çıkar, şımartmadan.', emoji: '🌟' },
-    { id: 'black_friday_survivor', title: 'İndirim Fatihi', desc: 'Black Friday haftalarını tüm barlar %20\'nin üzerindeyken bitir.', emoji: '🔥' },
-    { id: 'legend', title: 'Bir Yıl Dayandım', desc: 'Bir yılı görevden alınmadan tamamla.', emoji: '🗓️' },
-    { id: 'promoted', title: 'Anne, Bölge Müdürü Oldum', desc: 'Mağaza sağlıklıyken terfi et.', emoji: '👑' }
+    { id: 'first_month', title: 'İlk Ayı Devirdik', desc: 'Müdürlükte 4 haftayı geride bırak.' },
+    { id: 'clutch', title: 'Kriz Yönetmeni', desc: 'Herhangi bir barın %10\'un altına düştüğü bir haftayı atlat.' },
+    { id: 'capitalist', title: 'Kasa Dolu', desc: 'Kasayı %90 ve üstüne çıkar, taşırmadan.' },
+    { id: 'union', title: 'Ekip Seni Seviyor', desc: 'Personel moralini %90 ve üstüne çıkar, şımartmadan.' },
+    { id: 'hq_fave', title: 'Bölge Müdürünün Sağ Kolu', desc: 'Bölge memnuniyetini %90 ve üstüne çıkar.' },
+    { id: 'customer_champion', title: 'Tüketici Dostu', desc: 'Müşteri deneyimini %90 ve üstüne çıkar, şımartmadan.' },
+    { id: 'black_friday_survivor', title: 'İndirim Fatihi', desc: 'Black Friday haftalarını tüm barlar %20\'nin üzerindeyken bitir.' },
+    { id: 'legend', title: 'Bir Yıl Dayandım', desc: 'Bir yılı görevden alınmadan tamamla.' },
+    { id: 'promoted', title: 'Anne, Bölge Müdürü Oldum', desc: 'Mağaza sağlıklıyken terfi et.' }
 ];
 
 const STAT_LABELS = {
@@ -230,7 +233,7 @@ function renderMenuLeaderboard() {
     const listElement = document.getElementById('menu-leaderboard-list');
     if (!listElement) return;
 
-    listElement.innerHTML = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+    listElement.innerHTML = '<li class="list-empty">Skorlar yükleniyor…</li>';
 
     fetchGlobalLeaderboard().then(scores => {
         if (!scores || scores.length === 0) {
@@ -238,7 +241,7 @@ function renderMenuLeaderboard() {
         }
 
         if (scores.length === 0) {
-            listElement.innerHTML = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            listElement.innerHTML = '<li class="list-empty">Henüz kayıtlı skor yok.</li>';
             return;
         }
 
@@ -275,7 +278,6 @@ function triggerAchievementUnlock(id) {
     }
 
     toast.innerHTML = `
-        <div class="toast-icon">${ach.emoji}</div>
         <div class="toast-body">
             <span class="toast-heading">Başarım Açıldı! (+1 Yetenek Puanı)</span>
             <span class="toast-name">${ach.title}</span>
@@ -302,13 +304,11 @@ function renderAchievements() {
         const card = document.createElement('div');
         card.className = `achievement-card-box ${isUnlocked ? 'unlocked' : 'locked'}`;
         card.innerHTML = `
-            <div class="achievement-icon-wrapper">
-                ${isUnlocked ? ach.emoji : '🔒'}
-            </div>
             <div class="achievement-info">
                 <span class="achievement-title">${ach.title}</span>
                 <span class="achievement-desc">${ach.desc}</span>
             </div>
+            <span class="achievement-state">${isUnlocked ? 'Açıldı' : 'Kilitli'}</span>
         `;
         listElement.appendChild(card);
     });
@@ -343,13 +343,10 @@ function renderTalents() {
         let prereqHtml = '';
         if (talent.req && !ui.unlockedTalents.includes(talent.req)) {
             const reqTalent = TALENTS.find(t => t.id === talent.req);
-            prereqHtml = `<span class="talent-req-info"><i class="fas fa-lock"></i> Gereksinim: ${reqTalent.name}</span>`;
+            prereqHtml = `<span class="talent-req-info">Önce: ${reqTalent.name}</span>`;
         }
 
         card.innerHTML = `
-            <div class="talent-icon-wrapper">
-                ${talent.emoji}
-            </div>
             <div class="talent-info">
                 <span class="talent-title">${talent.name}</span>
                 <span class="talent-desc">${talent.desc}</span>
@@ -416,8 +413,8 @@ function setupSoundControl() {
     const soundBtn = document.getElementById('sound-toggle');
     const updateSoundIcon = () => {
         const isMuted = sound.isMuted();
-        soundBtn.innerHTML = isMuted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-        soundBtn.style.opacity = isMuted ? '0.5' : '1';
+        soundBtn.innerHTML = isMuted ? ICON_SOUND_OFF : ICON_SOUND_ON;
+        soundBtn.setAttribute('aria-label', isMuted ? 'Sesi aç' : 'Sesi kapat');
     };
 
     updateSoundIcon();
@@ -531,20 +528,20 @@ function updateCampaignBannerUI() {
     if (!banner) return;
 
     if (game.activeCampaign && game.campaignWeeksLeft > 0) {
-        banner.className = 'campaign-banner glass-panel';
+        banner.className = 'campaign-banner';
 
         if (game.activeCampaign === 'black_friday') {
             banner.classList.add('theme-black-friday');
-            title.textContent = '🔥 BLACK FRIDAY AKTİF';
-            desc.textContent = `İndirim çılgınlığı! (Kalan Süre: ${game.campaignWeeksLeft} Hafta)`;
+            title.textContent = 'Black Friday';
+            desc.textContent = `Satış bol, ekip yorgun. ${game.campaignWeeksLeft} hafta kaldı.`;
         } else if (game.activeCampaign === 'new_year') {
             banner.classList.add('theme-new-year');
-            title.textContent = '🎁 YILBAŞI KAMPANYASI AKTİF';
-            desc.textContent = `Hediye alışverişi! (Kalan Süre: ${game.campaignWeeksLeft} Hafta)`;
+            title.textContent = 'Yılbaşı kampanyası';
+            desc.textContent = `Müşteri tepkileri daha sert. ${game.campaignWeeksLeft} hafta kaldı.`;
         } else if (game.activeCampaign === 'audit') {
             banner.classList.add('theme-audit');
-            title.textContent = '📋 GENEL MERKEZ DENETİMİ';
-            desc.textContent = `Denetmenler Mağazada! (Kalan Süre: ${game.campaignWeeksLeft} Hafta)`;
+            title.textContent = 'Genel Merkez denetimi';
+            desc.textContent = `Bölge her şeyi not ediyor. ${game.campaignWeeksLeft} hafta kaldı.`;
         }
     } else {
         banner.classList.add('hidden');
@@ -566,7 +563,7 @@ function hintBadges(preview) {
             const up = direction > 0;
             return `
                 <span class="effect-badge ${up ? 'effect-pos' : 'effect-neg'}" title="${size}">
-                    <i class="fas ${up ? 'fa-caret-up' : 'fa-caret-down'}"></i>
+                    <span aria-label="${up ? 'artar' : 'azalır'}">${up ? '▲' : '▼'}</span>
                     ${STAT_LABELS[stat]} <span class="hint-dot mag-${magnitude}" aria-label="${size}"></span>
                 </span>`;
         }
@@ -585,7 +582,7 @@ function clearStatPreview() {
             indicator.className = 'stat-indicator';
             indicator.innerHTML = '';
         }
-        if (card) card.style.borderColor = '';
+        if (card) card.classList.remove('previewing');
     });
 }
 
@@ -599,35 +596,22 @@ function showStatPreview(preview) {
         const mag = ui.difficulty === 'hard' ? 1 : magnitude;
         indicator.innerHTML = `<span class="hint-dot mag-${mag}"></span>`;
         indicator.className = 'stat-indicator show-neutral';
-        card.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+        card.classList.add('previewing');
     });
 }
 
 function displayCard(event) {
     const cardElement = document.getElementById('event-card');
-    cardElement.className = 'event-card glass-panel';
+    cardElement.className = 'event-card';
     void cardElement.offsetWidth;
 
-    const npcBadge = document.getElementById('card-npc-badge');
-    const cardTag = document.getElementById('card-tag');
+    // Her kart ekip grubuna düşen bir mesaj: karakteri yoksa mağaza adına gelir.
+    const sender = event.character || { name: 'Mağaza', title: event.category };
+    document.getElementById('card-npc-avatar').textContent = sender.name.charAt(0).toLocaleUpperCase('tr-TR');
+    document.getElementById('card-npc-name').textContent = sender.name;
+    document.getElementById('card-npc-title').textContent = sender.title;
+    document.getElementById('card-tag').textContent = event.category.toLocaleLowerCase('tr-TR');
 
-    if (event.character) {
-        if (npcBadge) {
-            document.getElementById('card-npc-emoji').textContent = event.character.emoji;
-            document.getElementById('card-npc-name').textContent = event.character.name;
-            document.getElementById('card-npc-title').textContent = event.character.title;
-            npcBadge.classList.remove('hidden');
-        }
-        if (cardTag) cardTag.classList.add('hidden');
-    } else {
-        if (npcBadge) npcBadge.classList.add('hidden');
-        if (cardTag) {
-            cardTag.textContent = event.category;
-            cardTag.classList.remove('hidden');
-        }
-    }
-
-    document.getElementById('card-graphic').innerHTML = `<span class="graphic-emoji">${event.emoji}</span>`;
     document.getElementById('card-title').textContent = event.title;
     document.getElementById('card-desc').textContent = event.desc;
 
@@ -641,7 +625,7 @@ function displayCard(event) {
         btn.setAttribute('data-index', idx);
 
         btn.innerHTML = `
-            <span class="option-label">SEÇENEK ${String.fromCharCode(65 + idx)}</span>
+            <span class="option-label">${String.fromCharCode(65 + idx)}</span>
             <span class="option-text">${option.text}</span>
             <div class="choice-effects">${hintBadges(preview)}</div>
         `;
@@ -656,6 +640,8 @@ function displayCard(event) {
     });
 
     cardElement.classList.add('card-enter');
+    // Telefonda seçimden sonra yeni kart ve barlar görünsün
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function handleChoice(optionIdx) {
@@ -712,8 +698,8 @@ function updateStatsUI() {
         const card = document.getElementById(`stat-${stat}-card`);
 
         if (bar && valueText) {
-            bar.style.width = `${val}%`;
-            valueText.textContent = `${val}%`;
+            bar.style.height = `${val}%`;
+            valueText.textContent = val;
         }
 
         // İki uç da tehlikeli
@@ -774,10 +760,9 @@ function triggerMonthlyReview() {
             ${report.goals.map(g => `
                 <div class="goal-item-status ${g.isMet ? 'met' : 'unmet'}">
                     <span>
-                        <i class="fas ${g.isMet ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                        ${g.desc} <strong>(Mevcut: %${g.currentVal})</strong>
+                        ${g.desc}
                     </span>
-                    <span class="badge">${g.isMet ? 'Tuttu' : 'Kaçtı'}</span>
+                    <span class="badge">${g.currentVal} · ${g.isMet ? 'TUTTU' : 'KAÇTI'}</span>
                 </div>
             `).join('')}
         </div>
@@ -785,24 +770,23 @@ function triggerMonthlyReview() {
 
     if (report.allMet) {
         goalBox.className = 'goal-status-box success';
-        goalTitle.innerHTML = `<i class="fas fa-check-circle"></i> Tüm hedefler tuttu`;
-        goalDesc.innerHTML = `Bölge yönetimi memnun.<br>${goalsHTML}`;
+        goalTitle.textContent = 'Hedefler tuttu';
+        goalDesc.innerHTML = goalsHTML;
         sound.playSuccess();
     } else {
         goalBox.className = 'goal-status-box failed';
-        goalTitle.innerHTML = `<i class="fas fa-times-circle"></i> Bazı hedefler kaçtı`;
-        goalDesc.innerHTML = `Bölge yönetiminden uyarı aldın.<br>${goalsHTML}`;
+        goalTitle.textContent = 'Hedef kaçtı';
+        goalDesc.innerHTML = goalsHTML;
         sound.playWarning();
     }
     goalReward.textContent = effectsText(report.effects);
 
     goalDesc.innerHTML += `
         <div class="upkeep-note">
-            <i class="fas fa-receipt"></i>
-            Kasadan gelen bütçe: <strong>+${formatTl(report.incomeTl)}</strong>
-            · Hedef primi: <strong>+${formatTl(report.goalBonusTl)}</strong>
-            ${report.upkeepTl ? `· Bakım: <strong>−${formatTl(report.upkeepTl)}</strong>` : ''}
-            ${report.unpaidTl ? `<br>Bütçe bakıma yetmedi, fark kasadan çıktı.` : ''}
+            <div class="receipt-row"><span>Kasadan gelen bütçe</span><span>+${formatTl(report.incomeTl)}</span></div>
+            <div class="receipt-row"><span>Hedef primi</span><span>+${formatTl(report.goalBonusTl)}</span></div>
+            ${report.upkeepTl ? `<div class="receipt-row"><span>Bakım giderleri</span><span>−${formatTl(report.upkeepTl)}</span></div>` : ''}
+            ${report.unpaidTl ? `<div class="receipt-row warn"><span>Bütçe yetmedi, fark kasadan</span><span>−${Math.ceil(report.unpaidTl / 1000)} Kasa</span></div>` : ''}
         </div>`;
 
     updateStatsUI();
@@ -846,19 +830,21 @@ function setupShopUI() {
         const isPurchased = game.upgrades.has(upgrade.id);
         const buyable = canBuy(game, upgrade);
 
-        let label = `<i class="fas fa-coins"></i> Satın Al (${formatTl(cost)})`;
-        if (isPurchased) label = '<i class="fas fa-check"></i> Alındı';
-        else if (boughtThisMonth) label = `${formatTl(cost)} · Bu ay hakkın doldu`;
-        else if (!buyable) label = `${formatTl(cost)} · Bütçe yetmiyor`;
+        let label = formatTl(cost);
+        let note = '';
+        if (isPurchased) label = 'Alındı';
+        else if (boughtThisMonth) note = 'Bu ayın hakkı kullanıldı';
+        else if (!buyable) note = 'Bütçe yetmiyor';
 
         const itemCard = document.createElement('div');
-        itemCard.className = `shop-item glass-panel ${isPurchased ? 'purchased' : ''}`;
+        itemCard.className = `shop-item ${isPurchased ? 'purchased' : ''} ${buyable || isPurchased ? '' : 'unavailable'}`;
         itemCard.innerHTML = `
-            <div class="shop-item-icon">${upgrade.emoji}</div>
-            <div class="shop-item-name">${upgrade.name}</div>
-            <div class="shop-item-desc">${upgrade.desc}</div>
-            <div class="shop-item-effect"><i class="fas fa-plus-circle"></i> ${upgrade.effectDesc}</div>
-            <button class="shop-buy-btn" data-id="${upgrade.id}" ${buyable ? '' : 'disabled'}>${label}</button>
+            <div class="shop-item-body">
+                <div class="shop-item-name">${upgrade.name}</div>
+                <div class="shop-item-effect">${upgrade.effectDesc}</div>
+                ${note ? `<div class="shop-item-note">${note}</div>` : ''}
+            </div>
+            <button type="button" class="shop-buy-btn" data-id="${upgrade.id}" ${buyable ? '' : 'disabled'}>${label}</button>
         `;
 
         const buyBtn = itemCard.querySelector('.shop-buy-btn');
@@ -886,7 +872,7 @@ function updateActiveUpgradesWidget() {
             if (game.upgrades.has(upg.id)) {
                 const tag = document.createElement('span');
                 tag.className = 'active-upgrade-tag';
-                tag.innerHTML = `${upg.emoji} ${upg.name}`;
+                tag.textContent = upg.name;
                 list.appendChild(tag);
             }
         });
@@ -949,7 +935,7 @@ function finishGame() {
     reasonEl.textContent = endingText(ending);
     if (earnedPoints > 0) {
         const bonus = document.createElement('span');
-        bonus.style.cssText = 'color:#c084fc; font-weight:bold; font-size:0.9rem; display:block; margin-top:8px;';
+        bonus.className = 'talent-bonus';
         bonus.textContent = `+${earnedPoints} Yetenek Puanı kazandın.`;
         reasonEl.appendChild(bonus);
     }
@@ -996,7 +982,7 @@ function saveLeaderboard(score) {
 function renderLeaderboard() {
     const mainList = document.getElementById('leaderboard-list');
     const retirementList = document.getElementById('retirement-leaderboard-list');
-    const loading = '<li class="text-center text-muted" style="list-style:none; padding: 20px 0; color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Skorlar yükleniyor...</li>';
+    const loading = '<li class="list-empty">Skorlar yükleniyor…</li>';
 
     if (mainList) mainList.innerHTML = loading;
     if (retirementList) retirementList.innerHTML = loading;
@@ -1005,7 +991,7 @@ function renderLeaderboard() {
         if (!scores || scores.length === 0) scores = getLocalScores();
 
         if (scores.length === 0) {
-            const noScoreHtml = '<li class="text-center text-muted" style="font-size:0.85rem; list-style:none; padding: 20px 0; color:var(--text-muted);">Henüz kayıtlı skor bulunmuyor.</li>';
+            const noScoreHtml = '<li class="list-empty">Henüz kayıtlı skor yok.</li>';
             if (mainList) mainList.innerHTML = noScoreHtml;
             if (retirementList) retirementList.innerHTML = noScoreHtml;
             return;
@@ -1113,7 +1099,7 @@ function renderProgressionChart(containerId) {
 
     const data = game.history;
     if (!data || data.length < 2) {
-        container.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%; color:var(--text-muted);">Grafik için yeterli hafta yok.</div>';
+        container.innerHTML = '<div class="list-empty">Grafik için yeterli hafta yok.</div>';
         return;
     }
 
@@ -1136,7 +1122,7 @@ function renderProgressionChart(containerId) {
             <text x="${padding - 5}" y="${getY(100) + 3}" text-anchor="end" class="svg-grid-text">100</text>
             <text x="${padding}" y="${height - 4}" text-anchor="start" class="svg-grid-text">Hafta 0</text>
             <text x="${width - padding}" y="${height - 4}" text-anchor="end" class="svg-grid-text">Hafta ${maxWeeks}</text>
-            ${STATS.map(stat => `<polyline fill="none" stroke="${colors[stat]}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${line(stat)}" class="svg-chart-path" />`).join('')}
+            ${STATS.map(stat => `<polyline fill="none" stroke="${colors[stat]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${line(stat)}" />`).join('')}
         </svg>
     `;
 }
