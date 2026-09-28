@@ -476,15 +476,17 @@ legend { padding: 0; margin-bottom: 6px; }
 }
 
 @media (min-width: 960px) {
-    /* Oyun: solda durum paneli (sabit), sağda mesaj ve cevaplar */
+    /* Oyun: solda durum paneli (sabit), sağda mesaj ve cevaplar.
+       Dikeyde ortalamak yerine üste sabit: kart uzayıp kısalınca düzen zıplamasın. */
     .game {
+        --game-top: clamp(32px, 9vh, 96px);
         max-width: 1120px;
         min-height: 100vh;
-        padding: 40px 40px 48px;
+        padding: var(--game-top) 40px 48px;
         display: grid;
         grid-template-columns: minmax(300px, 380px) minmax(0, 620px);
         justify-content: center;
-        align-content: center;
+        align-content: start;
         align-items: start;
         column-gap: 64px;
     }
@@ -493,10 +495,11 @@ legend { padding: 0; margin-bottom: 6px; }
         flex-direction: column;
         gap: 16px;
         position: sticky;
-        top: 40px;
+        top: var(--game-top);
     }
     .event-card { padding-top: 4px; gap: 16px; }
-    .bubble { padding: 16px 18px; }
+    /* En az başlık + 4 satır: kısa soruda da şıklar aynı hizadan başlasın */
+    .bubble { padding: 16px 18px; min-height: 9.5em; }
     .bubble-title { font-size: 19px; }
     .bubble-text { font-size: 17.5px; }
     .gauge-tank { height: 96px; }
@@ -554,8 +557,8 @@ legend { padding: 0; margin-bottom: 6px; }
 }
 
 @media (min-width: 960px) and (max-height: 760px) {
-    .game { padding-top: 24px; }
-    .game-side { top: 24px; gap: 12px; }
+    .game { --game-top: 24px; }
+    .game-side { gap: 12px; }
     .gauge-tank { height: 80px; }
     .note-text { font-size: 14px; }
 }
