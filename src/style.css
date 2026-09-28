@@ -476,33 +476,42 @@ legend { padding: 0; margin-bottom: 6px; }
 }
 
 @media (min-width: 960px) {
-    /* Oyun: solda durum paneli (sabit), sağda mesaj ve cevaplar.
-       Dikeyde ortalamak yerine üste sabit: kart uzayıp kısalınca düzen zıplamasın. */
+    /* Oyun: ekran yüksekliğinde sabit bir çerçeve, solda durum paneli, sağda mesaj ve cevaplar.
+       İki sütun da çerçeveyi doldurur: üstleri ve altları hizalı, kart değişince hiçbir şey zıplamaz. */
+    #app {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
     .game {
-        --game-top: clamp(32px, 9vh, 96px);
+        --game-pad: clamp(24px, 6vh, 64px);
+        width: 100%;
         max-width: 1120px;
-        min-height: 100vh;
-        padding: var(--game-top) 40px 48px;
+        min-height: min(100vh, 860px);
+        padding: var(--game-pad) 40px;
         display: grid;
         grid-template-columns: minmax(300px, 380px) minmax(0, 620px);
+        grid-template-rows: minmax(0, 1fr);
         justify-content: center;
-        align-content: start;
-        align-items: start;
+        align-items: stretch;
         column-gap: 64px;
     }
     .game-side {
         display: flex;
         flex-direction: column;
         gap: 16px;
-        position: sticky;
-        top: var(--game-top);
     }
+    /* Çubuklar sütunda kalan boşluğu doldurur, not en alta oturur */
+    .gauges { flex: 1 1 auto; min-height: 150px; max-height: 280px; }
+    .gauge-tank { flex: 1; height: auto; min-height: 96px; }
+    .game-side > .note { margin-top: auto; }
+
     .event-card { padding-top: 4px; gap: 16px; }
-    /* En az başlık + 4 satır: kısa soruda da şıklar aynı hizadan başlasın */
-    .bubble { padding: 16px 18px; min-height: 9.5em; }
+    /* Soru üstte, cevaplar altta sabit: sol sütunun altıyla aynı hizada */
+    .reply-hint { margin-top: auto; padding-top: 12px; }
+    .bubble { padding: 16px 18px; }
     .bubble-title { font-size: 19px; }
     .bubble-text { font-size: 17.5px; }
-    .gauge-tank { height: 96px; }
 
     /* Menü sayfaları ekranın ortasında, geniş kâğıt */
     .sheet { max-width: 1080px; padding: 40px; justify-content: center; }
@@ -549,7 +558,6 @@ legend { padding: 0; margin-bottom: 6px; }
 }
 
 @media (min-width: 960px) and (min-height: 780px) {
-    .gauge-tank { height: 116px; }
     .gauge-icon { transform: scale(1.2); }
     .topbar-date { font-size: 26px; }
     .bubble-text { font-size: 18px; }
@@ -557,9 +565,8 @@ legend { padding: 0; margin-bottom: 6px; }
 }
 
 @media (min-width: 960px) and (max-height: 760px) {
-    .game { --game-top: 24px; }
+    .game { --game-pad: 20px; }
     .game-side { gap: 12px; }
-    .gauge-tank { height: 80px; }
     .note-text { font-size: 14px; }
 }
 
